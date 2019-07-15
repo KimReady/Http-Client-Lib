@@ -66,7 +66,9 @@ public class RequestFactory {
         if (headers != null) {
             okRequestBuilder.headers(headers);
         }
-        okRequestBuilder.url(baseUrl.resolve(relativeUrl));
+
+        HttpUrl completedUrl = paramManager.addQuery(baseUrl.newBuilder(relativeUrl));
+        okRequestBuilder.url(completedUrl);
 
         paramManager.addHeaders(okRequestBuilder);
 
@@ -257,7 +259,8 @@ public class RequestFactory {
             } else if (annotation instanceof PathParam) {
                 parameterManager.addPathParam(((PathParam) annotation).value(), arg);
             } else if (annotation instanceof Query) {
-                parameterManager.addQueryParam(((Query) annotation).value(), arg);
+                Object encodedQuery = Utils.encodeQuery(arg, ((Query) annotation).encoded());
+                parameterManager.addQueryParam(((Query) annotation).value(), encodedQuery);
             } else if (annotation instanceof QueryMap) {
                 if (!(arg instanceof Map)) {
                     throw new IllegalArgumentException("The type of the '@QueryMap' must be a Map");
@@ -265,7 +268,8 @@ public class RequestFactory {
                 Map<String, Object> headerMap = (Map) arg;
                 Set<String> keySet = headerMap.keySet();
                 for (String key : keySet) {
-                    parameterManager.addQueryParam(key, headerMap.get(key));
+                    Object encodedQuery = Utils.encodeQuery(headerMap.get(key), ((Query) annotation).encoded());
+                    parameterManager.addQueryParam(key, encodedQuery);
                 }
             } else if (annotation instanceof Field) {
                 parameterManager.addFieldParam(((Field) annotation).value(), arg);

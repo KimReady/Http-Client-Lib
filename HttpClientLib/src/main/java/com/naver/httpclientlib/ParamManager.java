@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import okhttp3.HttpUrl;
+
 class ParamManager {
     private Map<String, String> headerParams;
     private Map<String, String> pathParams;
@@ -29,6 +31,14 @@ class ParamManager {
             relUrl = relUrl.replace(pathParam, pathParams.get(paramName));
         }
         return relUrl;
+    }
+
+    HttpUrl addQuery(okhttp3.HttpUrl.Builder urlBuilder) {
+        Set<String> queryNames = queryParams.keySet();
+        for(String name : queryNames) {
+            urlBuilder.addEncodedQueryParameter(name, queryParams.get(name));
+        }
+        return urlBuilder.build();
     }
 
     void addHeaders(okhttp3.Request.Builder requestBuilder) {

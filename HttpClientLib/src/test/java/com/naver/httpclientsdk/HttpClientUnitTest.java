@@ -2,21 +2,8 @@ package com.naver.httpclientsdk;
 
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.HttpClient;
-import com.naver.httpclientlib.RequestFactory;
-import com.naver.httpclientlib.annotation.QueryMap;
 
 import org.junit.Test;
-
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * unit test for HttpClient
@@ -70,11 +57,6 @@ public class HttpClientUnitTest {
         } catch(Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void java_test() {
-        System.out.println(ValidHttpService.class.getMethods()[0].getAnnotations()[0].annotationType().getName());
     }
 
 }

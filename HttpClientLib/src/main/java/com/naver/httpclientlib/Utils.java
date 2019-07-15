@@ -2,8 +2,10 @@ package com.naver.httpclientlib;
 
 import com.naver.httpclientlib.annotation.RequestMapping;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,5 +57,16 @@ class Utils {
 
     static Matcher matchPathUrl(String relUrl) {
         return PATH_PARAM_URL_REG.matcher(relUrl);
+    }
+
+    static Object encodeQuery(Object query, boolean isEncoded) {
+        if(isEncoded) {
+            return query;
+        }
+        try {
+            return URLEncoder.encode(String.valueOf(query), "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+            return null;
+        }
     }
 }
