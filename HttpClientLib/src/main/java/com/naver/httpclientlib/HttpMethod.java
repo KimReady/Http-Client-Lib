@@ -1,13 +1,11 @@
 package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.converter.Converter;
 import com.naver.httpclientlib.converter.GsonConverterFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-class HttpMethod<ResponseT, ReturnT> {
+class HttpMethod<ResponseT> {
 
     static HttpMethod create(HttpClient httpClient, Method method, Object[] args) {
         RequestFactory requestFactory = new RequestFactory.Builder(httpClient, method, args).build();
@@ -24,19 +22,15 @@ class HttpMethod<ResponseT, ReturnT> {
             httpClient.setConverter(GsonConverterFactory.create().converter(responseType));
         }
 
-        return new HttpMethod<>(httpClient, requestFactory, method, args);
+        return new HttpMethod<>(httpClient, requestFactory);
     }
 
     private HttpClient httpClient;
     private RequestFactory requestFactory;
-    private Method method;
-    private Object[] args;
 
-    private HttpMethod(HttpClient httpClient, RequestFactory requestFactory, Method method, Object[] args) {
+    private HttpMethod(HttpClient httpClient, RequestFactory requestFactory) {
         this.httpClient = httpClient;
         this.requestFactory = requestFactory;
-        this.method = method;
-        this.args = args;
     }
 
     public CallTask<ResponseT> invoke() {

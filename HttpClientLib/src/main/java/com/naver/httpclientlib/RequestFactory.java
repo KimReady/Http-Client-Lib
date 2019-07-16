@@ -25,7 +25,6 @@ import okhttp3.MediaType;
 
 public class RequestFactory {
     private HttpUrl baseUrl;
-    private Method method;
     private boolean hasBody;
     private boolean isFormEncoded;
     private boolean isMultipart;
@@ -44,7 +43,6 @@ public class RequestFactory {
     RequestFactory(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.relativeUrl = builder.relativeUrl;
-        this.method = builder.method;
         this.hasBody = builder.hasBody;
         this.isFormEncoded = builder.isFormEncoded;
         this.httpMethod = builder.httpMethod;
@@ -101,11 +99,9 @@ public class RequestFactory {
     }
 
     public static class Builder {
-        private HttpClient httpClient;
         private Method method;
         private Annotation[] methodAnnotations;
         private Annotation[][] parameterAnnotations;
-        private Type[] parameterTypes;
         private ParamManager parameterManager;
         private okhttp3.Call.Factory callFactory;
 
@@ -121,13 +117,11 @@ public class RequestFactory {
         private Object[] args;
 
         public Builder(HttpClient httpClient, Method method, Object[] args) {
-            this.httpClient = httpClient;
             this.callFactory = httpClient.getCallFactory();
             this.method = method;
             this.baseUrl = httpClient.getBaseUrl();
             this.methodAnnotations = method.getAnnotations();
             this.parameterManager = new ParamManager();
-            this.parameterTypes = method.getGenericParameterTypes();
             this.parameterAnnotations = method.getParameterAnnotations();
             this.isMultipart = false;
             this.args = args;
@@ -243,7 +237,6 @@ public class RequestFactory {
         }
 
         private void parseParameterManager(Annotation annotation, Object arg) {
-            Utils.checkValidateParamType(arg);
             if (annotation instanceof Header) {
                 parameterManager.addHeaderParam(((Header) annotation).value(), arg);
             } else if (annotation instanceof HeaderMap) {
@@ -267,7 +260,7 @@ public class RequestFactory {
                 Map<String, Object> headerMap = (Map) arg;
                 Set<String> keySet = headerMap.keySet();
                 for (String key : keySet) {
-                    Object encodedQuery = Utils.encodeQuery(headerMap.get(key), ((Query) annotation).encoded());
+                    Object encodedQuery = Utils.encodeQuery(headerMap.get(key), ((QueryMap) annotation).encoded());
                     parameterManager.addQueryParam(key, encodedQuery);
                 }
             } else if (annotation instanceof Field) {

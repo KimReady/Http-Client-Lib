@@ -1,7 +1,6 @@
 package com.naver.httpclientlib;
 
 import com.naver.httpclientlib.converter.Converter;
-import com.naver.httpclientlib.converter.GsonConverter;
 
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -62,10 +61,6 @@ public final class HttpClient {
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
 
-        public Builder() {
-
-        }
-
         public Builder baseUrl(String baseUrl) {
             checkNotNull(baseUrl, "URL is null");
             return baseUrl(HttpUrl.get(baseUrl));
@@ -84,6 +79,16 @@ public final class HttpClient {
         public Builder baseUrl(HttpUrl baseUrl) {
             checkNotNull(baseUrl, "URL is null");
             this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public Builder converter(Converter converter) {
+            this.converter = converter;
+            return this;
+        }
+
+        public Builder callFactory(okhttp3.Call.Factory callFactory) {
+            this.callFactory = callFactory;
             return this;
         }
 

@@ -49,22 +49,22 @@ class ParamManager {
     }
 
     void addHeaderParam(String key, Object value) {
-        Utils.checkNotMap(key, value);
+        Utils.checkValidParam(key, value);
         headerParams.put(key, String.valueOf(value));
     }
 
     void addPathParam(String key, Object value) {
-        Utils.checkNotMap(key, value);
+        Utils.checkValidParam(key, value);
         pathParams.put(key, String.valueOf(value));
     }
 
     void addQueryParam(String key, Object value) {
-        Utils.checkNotMap(key, value);
+        Utils.checkValidParam(key, value);
         queryParams.put(key, String.valueOf(value));
     }
 
     void addFieldParam(String key, Object value) {
-        Utils.checkNotMap(key, value);
+        Utils.checkValidParam(key, value);
         fieldParams.put(key, String.valueOf(value));
     }
 

@@ -4,7 +4,6 @@ import com.naver.httpclientlib.annotation.RequestMapping;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -12,8 +11,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,23 +47,29 @@ public class Utils {
         throw new UnsupportedOperationException("please add a annotation '@RequestMapping' above the method. ");
     }
 
-    static void checkValidateParamType(Object object) {
-        if (object instanceof Number || object instanceof String || object instanceof Map) {
+    /**
+     *  parameter value가 String으로 변환 가능한지 검사
+     * @param key parameter name
+     * @param value actual parameter value
+     */
+    static void checkValidParam(String key, Object value) {
+        if (value instanceof String || value instanceof Number) {
             return;
         }
-        throw new IllegalArgumentException("Invalid parameter type");
+        throw new IllegalArgumentException("the type of '" + key + "' can't cast to String.");
     }
 
-    static void checkNotMap(String key, Object value) {
-        if (value instanceof Map) {
-            throw new IllegalArgumentException("type of the '" + key + "' must not be Map.");
-        }
-    }
-
+    /**
+     * relative URL에서 {} 로 표기된 path parameter 검출
+     * @param relUrl 변환되기 전 relative URL
+     */
     static Matcher matchPathUrl(String relUrl) {
         return PATH_PARAM_URL_REG.matcher(relUrl);
     }
 
+    /**
+     * Encode Request Query value
+     */
     static Object encodeQuery(Object query, boolean isEncoded) {
         if (isEncoded) {
             return query;
@@ -97,31 +100,7 @@ public class Utils {
             return checkResolvableType(((GenericArrayType) type).getGenericComponentType());
         }
 
-        throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType");
-    }
-
-    static Class<?> getRawType(Type type) {
-        checkNotNull(type, "type == null");
-
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            Type rawType = parameterizedType.getRawType();
-            if (!(rawType instanceof Class)) {
-                throw new IllegalArgumentException(rawType.toString() + "is not instance of Class.");
-            }
-            return (Class<?>) rawType;
-        } else if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType) type).getGenericComponentType();
-            return Array.newInstance(getRawType(componentType), 0).getClass();
-        } else if (type instanceof TypeVariable) {
-            return Object.class;
-        } else if (type instanceof WildcardType) {
-            return getRawType(((WildcardType) type).getUpperBounds()[0]);
-        }
-
-        throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType.");
+        throw new IllegalArgumentException("Expected a Class, ParameterizedType or GenericArrayType");
     }
 
     static Type getParameterUpperBound(int index, ParameterizedType type) {
@@ -132,11 +111,4 @@ public class Utils {
         return paramType;
     }
 
-    static Type getParameterLowerBound(int index, ParameterizedType type) {
-        Type paramType = type.getActualTypeArguments()[index];
-        if (paramType instanceof WildcardType) {
-            return ((WildcardType) paramType).getLowerBounds()[0];
-        }
-        return paramType;
-    }
 }
