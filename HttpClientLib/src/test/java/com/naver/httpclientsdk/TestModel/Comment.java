@@ -1,13 +1,13 @@
-package com.naver.httpclientsdk;
+package com.naver.httpclientsdk.TestModel;
 
 public class Comment {
-    Integer postId;
-    Integer id;
+    int postId;
+    int id;
     String name;
     String email;
     String body;
 
-    public Comment(Integer postId, Integer id, String name, String email, String body) {
+    public Comment(int postId, int id, String name, String email, String body) {
         this.postId = postId;
         this.id = id;
         this.name = name;
@@ -15,19 +15,19 @@ public class Comment {
         this.body = body;
     }
 
-    public Integer getPostId() {
+    public int getPostId() {
         return postId;
     }
 
-    public void setPostId(Integer postId) {
+    public void setPostId(int postId) {
         this.postId = postId;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -53,5 +53,16 @@ public class Comment {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "postId=" + postId +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

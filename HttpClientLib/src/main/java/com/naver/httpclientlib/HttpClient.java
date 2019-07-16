@@ -1,12 +1,13 @@
 package com.naver.httpclientlib;
 
+import com.naver.httpclientlib.converter.Converter;
+import com.naver.httpclientlib.converter.GsonConverter;
+
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 
-import okhttp3.Call;
 import okhttp3.ConnectionSpec;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -14,12 +15,14 @@ import okhttp3.OkHttpClient;
 import static com.naver.httpclientlib.Utils.checkNotNull;
 
 public final class HttpClient {
-    private final HttpUrl baseUrl;
-    private final okhttp3.Call.Factory callFactory;
+    private HttpUrl baseUrl;
+    private okhttp3.Call.Factory callFactory;
+    private Converter converter;
 
     public HttpClient(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.callFactory = builder.callFactory;
+        this.converter = builder.converter;
     }
 
     public <T> T create(Class<T> service) {
@@ -32,9 +35,12 @@ public final class HttpClient {
                 , new HttpInvocationHandler(this));
     }
 
-    HttpClient(HttpUrl baseUrl, Call.Factory callFactory) {
-        this.baseUrl = baseUrl;
-        this.callFactory = callFactory;
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = HttpUrl.get(baseUrl);
+    }
+
+    public void setConverter(Converter converter) {
+        this.converter = converter;
     }
 
     HttpUrl getBaseUrl() {
@@ -45,20 +51,19 @@ public final class HttpClient {
         return callFactory;
     }
 
+    Converter getConverter() {
+        return converter;
+    }
     /**
      * Builder
      */
     public static final class Builder {
         private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
+        private Converter converter;
 
         public Builder() {
 
-        }
-
-        public Builder(HttpClient httpClient) {
-            this.baseUrl = httpClient.baseUrl;
-            this.callFactory = httpClient.callFactory;
         }
 
         public Builder baseUrl(String baseUrl) {
@@ -93,7 +98,7 @@ public final class HttpClient {
                         .build();
             }
 
-            return new HttpClient(baseUrl, callFactory);
+            return new HttpClient(this);
         }
     }
 }

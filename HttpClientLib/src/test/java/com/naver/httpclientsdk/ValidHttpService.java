@@ -2,34 +2,33 @@ package com.naver.httpclientsdk;
 
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.RequestMethod;
-import com.naver.httpclientlib.annotation.Headers;
 import com.naver.httpclientlib.annotation.PathParam;
 import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.RequestMapping;
+import com.naver.httpclientsdk.TestModel.Comment;
+import com.naver.httpclientsdk.TestModel.Post;
 
-import java.util.Map;
-
-import okhttp3.internal.annotations.EverythingIsNonNull;
+import java.util.List;
 
 public interface ValidHttpService {
     @RequestMapping(value="/posts", method=RequestMethod.GET)
-    CallTask<String> getPosts();
+    CallTask<List<Post>> getPosts();
 
     @RequestMapping(value="/posts/{id}", method=RequestMethod.GET)
-    CallTask<String> getPostsById(@PathParam("id") Integer id);
+    CallTask<Post> getPostsById(@PathParam("id") Integer id);
 
     @RequestMapping(value="/posts/{id}/comments", method=RequestMethod.GET)
-    CallTask<String> getCommentsById(@PathParam("id") Integer id);
+    CallTask<List<Comment>> getCommentsById(@PathParam("id") Integer id);
 
     @RequestMapping(value="/comments", method=RequestMethod.GET)
-    CallTask<String> getCommentsByPostId(@Query("postId") Integer postId);
+    CallTask<List<Comment>> getCommentsByPostId(@Query("postId") Integer postId);
 
     @RequestMapping(value="/posts", method=RequestMethod.POST)
-    CallTask<String> postPosts();
+    CallTask<List<Post>> postPosts();
 
     @RequestMapping(value="/posts/{id}", method=RequestMethod.PUT)
-    CallTask<String> putPostsById(@PathParam("id") Integer id);
+    CallTask<List<Post>> putPostsById(@PathParam("id") Integer id);
 
     @RequestMapping(value="/posts/{id}", method=RequestMethod.DELETE)
-    CallTask<String> deletePostById(@PathParam("id") Integer id);
+    CallTask<List<Post>> deletePostById(@PathParam("id") Integer id);
 }

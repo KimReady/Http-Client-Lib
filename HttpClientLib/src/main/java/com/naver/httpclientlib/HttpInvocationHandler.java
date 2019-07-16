@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 class HttpInvocationHandler implements InvocationHandler {
-    final HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public HttpInvocationHandler(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -21,6 +21,12 @@ class HttpInvocationHandler implements InvocationHandler {
 
         // @RequestMapping 어노테이션이 적용되지 않은 메소드의 경우 Exception 처리
         Utils.checkSupportedMethod(method);
+
+        Type returnType = method.getGenericReturnType();
+        if(returnType == void.class) {
+            throw new IllegalArgumentException("Method return type can't be void.");
+        }
+        Utils.checkResolvableType(returnType);
 
         return HttpMethod.create(httpClient, method, objects).invoke();
     }

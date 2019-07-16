@@ -1,27 +1,31 @@
 package com.naver.httpclientlib;
 
+import com.naver.httpclientlib.converter.Converter;
+
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 class RealCallTask<T> implements CallTask<T> {
     HttpMethod httpMethod;
     RequestFactory requestFactory;
     okhttp3.Call.Factory okhttpCallFactory;
     okhttp3.Call okhttpCall;
+    Converter<T, ?> converter;
 
-    RealCallTask(HttpMethod httpMethod, RequestFactory requestFactory, okhttp3.Call.Factory okhttpCallFactory) {
+    RealCallTask(HttpMethod httpMethod, RequestFactory requestFactory,
+                 okhttp3.Call.Factory okhttpCallFactory, Converter<T, ?> converter) {
         this.httpMethod = httpMethod;
         this.requestFactory = requestFactory;
         this.okhttpCallFactory = okhttpCallFactory;
+        this.converter = converter;
     }
 
     @Override
-    public T execute() throws IOException {
+    public Response<T> execute() throws IOException {
         if(okhttpCall == null) {
             okhttpCall = newOkhttpCall();
         }
 
-        return (T) okhttpCall.execute().body().string();
+        return convertResponse(okhttpCall.execute());
     }
 
     @Override
@@ -45,5 +49,9 @@ class RealCallTask<T> implements CallTask<T> {
             throw new NullPointerException("there is no matching call");
         }
         return call;
+    }
+
+    private Response<T> convertResponse(okhttp3.Response response) {
+        return new Response<>(response, converter);
     }
 }

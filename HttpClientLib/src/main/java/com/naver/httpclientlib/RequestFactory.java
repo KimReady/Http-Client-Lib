@@ -24,11 +24,11 @@ import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 
 public class RequestFactory {
-    HttpUrl baseUrl;
-    Method method;
-    boolean hasBody;
-    boolean isFormEncoded;
-    boolean isMultipart;
+    private HttpUrl baseUrl;
+    private Method method;
+    private boolean hasBody;
+    private boolean isFormEncoded;
+    private boolean isMultipart;
     String httpMethod;
     String relativeUrl;
     List<String> pathParams;
@@ -36,10 +36,10 @@ public class RequestFactory {
     MediaType contentType;
     ParamManager paramManager;
 
-    okhttp3.Request.Builder okRequestBuilder;
-    okhttp3.FormBody.Builder formBuilder;
-    okhttp3.MultipartBody.Builder multipartBuilder;
-    okhttp3.RequestBody requestBody;
+    private okhttp3.Request.Builder okRequestBuilder;
+    private okhttp3.FormBody.Builder formBuilder;
+    private okhttp3.MultipartBody.Builder multipartBuilder;
+    private okhttp3.RequestBody requestBody;
 
     RequestFactory(Builder builder) {
         this.baseUrl = builder.baseUrl;
@@ -98,28 +98,27 @@ public class RequestFactory {
             return okRequestBuilder.head().build();
         }
         return null;
-
     }
 
     public static class Builder {
-        HttpClient httpClient;
-        Method method;
-        Annotation[] methodAnnotations;
-        Annotation[][] parameterAnnotations;
-        Type[] parameterTypes;
-        ParamManager parameterManager;
-        okhttp3.Call.Factory callFactory;
+        private HttpClient httpClient;
+        private Method method;
+        private Annotation[] methodAnnotations;
+        private Annotation[][] parameterAnnotations;
+        private Type[] parameterTypes;
+        private ParamManager parameterManager;
+        private okhttp3.Call.Factory callFactory;
 
-        HttpUrl baseUrl;
-        boolean hasBody;
-        boolean isFormEncoded;
-        boolean isMultipart;
-        String httpMethod;
-        String relativeUrl;
-        List<String> pathParams;
-        Headers headers;
-        MediaType contentType;
-        Object[] args;
+        private HttpUrl baseUrl;
+        private boolean hasBody;
+        private boolean isFormEncoded;
+        private boolean isMultipart;
+        private String httpMethod;
+        private String relativeUrl;
+        private List<String> pathParams;
+        private Headers headers;
+        private MediaType contentType;
+        private Object[] args;
 
         public Builder(HttpClient httpClient, Method method, Object[] args) {
             this.httpClient = httpClient;

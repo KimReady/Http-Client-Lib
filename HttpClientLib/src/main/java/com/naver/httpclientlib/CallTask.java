@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface CallTask<T> {
 
-    T execute() throws IOException;
+    Response<T> execute() throws IOException;
 
     void enqueue();
 
