@@ -10,8 +10,6 @@ import com.naver.httpclientsdk.TestModel.User;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +19,7 @@ import java.util.Map;
  * valid unit test for HttpClient
  */
 public class ValidUnitTest {
-    HttpClient httpClient = new HttpClient.Builder()
-            .baseUrl("http://jsonplaceholder.typicode.com")
+    HttpClient httpClient = new HttpClient.Builder("http://jsonplaceholder.typicode.com")
             .build();
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 
@@ -118,11 +115,56 @@ public class ValidUnitTest {
     }
 
     @Test
+    public void delete_posts_by_id() {
+        CallTask<Post> post = validHttpService.deletePostById(5);
+        try {
+            post.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void get_posts_head_method() {
+        CallTask<Void> posts = validHttpService.getPostsForHeadMethod();
+        try {
+            Response<Void> res = posts.execute();
+            System.out.println(res.header("content-type"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void post_posts_by_formUrlEncoded() {
+        CallTask<Post> post = validHttpService.postPostsFormUrlEncoded(111, "new title");
+        try {
+            Post result = post.execute().body();
+            System.out.println(result.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void post_posts_by_request_body() {
+        Post newPost = new Post(111, 111, "abc", "defg", 200);
+        CallTask<Post> post = validHttpService.postPosts(newPost);
+        try {
+            Post result = post.execute().body();
+            System.out.println(result.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void java_test() {
         try {
-            Method method = validHttpService.getClass().getMethod("getPosts");
-            Type type = method.getGenericReturnType();
-            System.out.println(type);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();

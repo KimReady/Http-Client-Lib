@@ -13,14 +13,13 @@ class ParamManager {
     private Map<String, String> headerParams;
     private Map<String, String> pathParams;
     private Map<String, String> queryParams;
-    private Map<String, String> fieldParams;
     private Map<String, List<String>> queriesParam;
+    private Object rawRequestBody;
 
     ParamManager() {
         headerParams = new HashMap<>();
         pathParams = new HashMap<>();
         queryParams = new HashMap<>();
-        fieldParams = new HashMap<>();
         queriesParam = new HashMap<>();
     }
 
@@ -87,9 +86,11 @@ class ParamManager {
         }
     }
 
-    void addFieldParam(String key, Object value) {
-        Utils.checkValidParam(key, value);
-        fieldParams.put(key, String.valueOf(value));
+    void setRawRequestBody(Object body) {
+        rawRequestBody = body;
     }
 
+    Object getRawRequestBody() {
+        return rawRequestBody;
+    }
 }

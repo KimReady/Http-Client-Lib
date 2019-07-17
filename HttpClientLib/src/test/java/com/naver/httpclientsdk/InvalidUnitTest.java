@@ -10,8 +10,7 @@ import org.junit.Test;
  * Invalid unit test for HttpClient
  */
 public class InvalidUnitTest {
-    HttpClient httpClient = new HttpClient.Builder()
-            .baseUrl("https://jsonplaceholder.typicode.com")
+    HttpClient httpClient = new HttpClient.Builder("https://jsonplaceholder.typicode.com")
             .build();
     InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
 

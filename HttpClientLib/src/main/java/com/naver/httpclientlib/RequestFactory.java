@@ -9,31 +9,31 @@ import com.naver.httpclientlib.annotation.PathParam;
 import com.naver.httpclientlib.annotation.Queries;
 import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.QueryMap;
+import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 
-public class RequestFactory {
-    private HttpUrl baseUrl;
-    private boolean hasBody;
-    private boolean isFormEncoded;
-    private boolean isMultipart;
-    String httpMethod;
-    String relativeUrl;
-    List<String> pathParams;
-    Headers headers;
-    MediaType contentType;
-    ParamManager paramManager;
+class RequestFactory {
+    private final HttpClient httpClient;
+    private final HttpUrl baseUrl;
+    private final boolean hasBody;
+    private final boolean isFormEncoded;
+    private final boolean isMultipart;
+    private final Headers headers;
+    private final MediaType contentType;
+    private final ParamManager paramManager;
+    final String httpMethod;
+    final String relativeUrl;
 
     private okhttp3.Request.Builder okRequestBuilder;
     private okhttp3.FormBody.Builder formBuilder;
@@ -41,12 +41,12 @@ public class RequestFactory {
     private okhttp3.RequestBody requestBody;
 
     RequestFactory(Builder builder) {
+        this.httpClient = builder.httpClient;
         this.baseUrl = builder.baseUrl;
         this.relativeUrl = builder.relativeUrl;
         this.hasBody = builder.hasBody;
         this.isFormEncoded = builder.isFormEncoded;
         this.httpMethod = builder.httpMethod;
-        this.pathParams = builder.pathParams;
         this.headers = builder.headers;
         this.contentType = builder.contentType;
         this.isMultipart = builder.isMultipart;
@@ -56,7 +56,7 @@ public class RequestFactory {
         this.multipartBuilder = builder.multipartBuilder;
     }
 
-    okhttp3.Request create() {
+    okhttp3.Request create() throws IOException {
         if (headers != null) {
             okRequestBuilder.headers(headers);
         }
@@ -66,60 +66,38 @@ public class RequestFactory {
 
         paramManager.addHeaders(okRequestBuilder);
 
-        if(httpMethod.equals("GET")) {
-            return okRequestBuilder.build();
-        } else if(httpMethod.equals("DELETE")) {
-            return okRequestBuilder.delete(requestBody).build();
-        } else if(httpMethod.equals("POST")) {
-            if (isFormEncoded) {
-                requestBody = formBuilder.build();
-                return okRequestBuilder.post(requestBody).build();
-            } else if (hasBody) {
-                return okRequestBuilder.post(requestBody).build();
-            } else if (isMultipart) {
-                return okRequestBuilder.post(requestBody).build();
-            }
-        } else if(httpMethod.equals("PUT")) {
-            if (isFormEncoded) {
-                requestBody = formBuilder.build();
-                return okRequestBuilder.put(requestBody).build();
-            } else if (hasBody) {
-                return okRequestBuilder.put(requestBody).build();
-            } else if (isMultipart) {
-                return okRequestBuilder.put(requestBody).build();
-            }
-        } else if(httpMethod.equals("HEAD")) {
-            return okRequestBuilder.head().build();
+        if (isFormEncoded) {
+            requestBody = formBuilder.build();
+        } else if(hasBody){
+            Object rawRequestBody = paramManager.getRawRequestBody();
+            requestBody = httpClient.getConverter().convertRequestBody(contentType, rawRequestBody);
         }
-        return null;
+
+        return okRequestBuilder.method(httpMethod, requestBody).build();
     }
 
     public static class Builder {
-        private Method method;
-        private Annotation[] methodAnnotations;
-        private Annotation[][] parameterAnnotations;
+        private final HttpClient httpClient;
+        private final Annotation[] methodAnnotations;
+        private final Annotation[][] parameterAnnotations;
         private ParamManager parameterManager;
-        private okhttp3.Call.Factory callFactory;
 
-        private HttpUrl baseUrl;
+        private final HttpUrl baseUrl;
         private boolean hasBody;
         private boolean isFormEncoded;
         private boolean isMultipart;
         private String httpMethod;
         private String relativeUrl;
-        private List<String> pathParams;
         private Headers headers;
         private MediaType contentType;
-        private Object[] args;
+        private final Object[] args;
 
         private okhttp3.Request.Builder okRequestBuilder;
         private okhttp3.FormBody.Builder formBuilder;
         private okhttp3.MultipartBody.Builder multipartBuilder;
-        private okhttp3.RequestBody requestBody;
 
         public Builder(HttpClient httpClient, Method method, Object[] args) {
-            this.callFactory = httpClient.getCallFactory();
-            this.method = method;
+            this.httpClient = httpClient;
             this.baseUrl = httpClient.getBaseUrl();
             this.methodAnnotations = method.getAnnotations();
             this.parameterManager = new ParamManager();
@@ -127,7 +105,6 @@ public class RequestFactory {
             this.isMultipart = false;
             this.args = args;
             this.okRequestBuilder = new okhttp3.Request.Builder();
-
         }
 
         public RequestFactory build() {
@@ -135,9 +112,6 @@ public class RequestFactory {
                 parseMethodAnnotation(annotation);
             }
 
-            if (isFormEncoded) {
-                formBuilder = new okhttp3.FormBody.Builder();
-            }
             if (isMultipart) {
                 multipartBuilder = new okhttp3.MultipartBody.Builder();
             }
@@ -181,7 +155,9 @@ public class RequestFactory {
                 }
                 headers = parseHeaders(headersToParse);
             } else if (annotation instanceof FormUrlEncoded) {
+                formBuilder = new okhttp3.FormBody.Builder();
                 isFormEncoded = true;
+                contentType = MediaType.parse("application/x-www-form-urlencoded");
             }
         }
 
@@ -200,7 +176,6 @@ public class RequestFactory {
             this.hasBody = hasBody;
 
             if (!relUrl.isEmpty()) {
-                this.pathParams = parsePathParameters(relUrl);
                 this.relativeUrl = relUrl;
             }
         }
@@ -224,22 +199,6 @@ public class RequestFactory {
                 }
             }
             return headerBuilder.build();
-        }
-
-        /**
-         * Relative URL에서 Path Parameter 파싱
-         *
-         * @param relUrl Relative URL
-         * @return path parameter list
-         */
-        private List<String> parsePathParameters(String relUrl) {
-            List<String> pathParameters = new LinkedList<>();
-            Matcher matcher = Utils.matchPathUrl(relUrl);
-            while (matcher.find()) {
-                String param = matcher.group();
-                pathParameters.add(param.substring(1, param.length() - 1));
-            }
-            return pathParameters;
         }
 
         String replacePathParameters(String relUrl) {
@@ -280,18 +239,34 @@ public class RequestFactory {
                     parameterManager.addQueryParam(key, encodedQuery);
                 }
             } else if (annotation instanceof Field) {
-                parameterManager.addFieldParam(((Field) annotation).value(), arg);
+                if(!isFormEncoded) {
+                    throw new IllegalArgumentException("'@Field' needs a '@FormUrlEncoded' above the method.");
+                }
+                if(((Field) annotation).encoded()) {
+                    formBuilder.addEncoded(((Field) annotation).value(), String.valueOf(arg));
+                } else {
+                    formBuilder.add(((Field) annotation).value(), String.valueOf(arg));
+                }
             } else if (annotation instanceof FieldMap) {
+                if(!isFormEncoded) {
+                    throw new IllegalArgumentException("'@FieldMap' needs a '@FormUrlEncoded' above the method.");
+                }
                 if (!(arg instanceof Map)) {
                     throw new IllegalArgumentException("The type of the '@FieldMap' must be a Map");
                 }
-                Map<String, Object> headerMap = (Map) arg;
-                Set<String> keySet = headerMap.keySet();
+                Map<String, Object> fieldMap = (Map) arg;
+                Set<String> keySet = fieldMap.keySet();
+                boolean encoded = (((FieldMap) annotation).encoded());
                 for (String key : keySet) {
-                    parameterManager.addFieldParam(key, headerMap.get(key));
+                    if(encoded) {
+                        formBuilder.add(key, String.valueOf(fieldMap.get(key)));
+                    } else {
+                        formBuilder.addEncoded(key, String.valueOf(fieldMap.get(key)));
+                    }
                 }
+            } else if (annotation instanceof RequestBody) {
+                parameterManager.setRawRequestBody(arg);
             }
         }
-
     }
 }

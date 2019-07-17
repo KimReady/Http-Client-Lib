@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Utils {
+public final class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
     /**
@@ -113,7 +113,7 @@ public class Utils {
         throw new IllegalArgumentException("Expected a Class, ParameterizedType or GenericArrayType");
     }
 
-    static Type getParameterUpperBound(int index, ParameterizedType type) {
+    public static Type getParameterUpperBound(int index, ParameterizedType type) {
         Type paramType = type.getActualTypeArguments()[index];
         if (paramType instanceof WildcardType) {
             return ((WildcardType) paramType).getUpperBounds()[0];
@@ -121,4 +121,16 @@ public class Utils {
         return paramType;
     }
 
+    static String hasToString(Object object) {
+        if(object instanceof String) {
+            return String.valueOf(object);
+        }
+        Method[] methods = object.getClass().getDeclaredMethods();
+        for(Method method : methods) {
+            if(method.getName().equals("toString")) {
+                return object.toString();
+            }
+        }
+        throw new IllegalArgumentException(object.getClass() + " must implement 'toString()' method or be type of String.");
+    }
 }

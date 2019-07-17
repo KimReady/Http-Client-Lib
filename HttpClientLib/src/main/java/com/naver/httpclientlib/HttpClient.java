@@ -49,33 +49,30 @@ public final class HttpClient {
     Converter getConverter() {
         return converter;
     }
+
     /**
      * Builder
      */
     public static final class Builder {
-        private HttpUrl baseUrl;
+        private final HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
 
-        public Builder baseUrl(String baseUrl) {
-            checkNotNull(baseUrl, "URL is null");
-            return baseUrl(HttpUrl.get(baseUrl));
+        public Builder(String baseUrl) {
+            this(HttpUrl.get(baseUrl));
         }
 
-        public Builder baseUrl(URL baseUrl) {
-            checkNotNull(baseUrl, "URL is null");
-            return baseUrl(HttpUrl.get(baseUrl));
+        public Builder(URL baseUrl) {
+            this(HttpUrl.get(baseUrl));
         }
 
-        public Builder baseUrl(URI baseUrl) {
-            checkNotNull(baseUrl, "URL is null");
-            return baseUrl(HttpUrl.get(baseUrl));
+        public Builder(URI baseUrl) {
+            this(HttpUrl.get(baseUrl));
         }
 
-        public Builder baseUrl(HttpUrl baseUrl) {
+        public Builder(HttpUrl baseUrl) {
             checkNotNull(baseUrl, "URL is null");
             this.baseUrl = baseUrl;
-            return this;
         }
 
         public Builder converter(Converter converter) {
@@ -94,6 +91,7 @@ public final class HttpClient {
             }
 
             if (callFactory == null) {
+                // TLS -> CLEARTEXT 순으로 연결 시도
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
                         .build();

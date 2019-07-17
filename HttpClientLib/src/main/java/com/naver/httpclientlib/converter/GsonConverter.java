@@ -15,8 +15,6 @@ import okhttp3.RequestBody;
 import okio.Buffer;
 
 public final class GsonConverter<ReturnType, RequestType> implements Converter<ReturnType, RequestType> {
-    private static final MediaType MEDIA_TYPE = MediaType.get("application/json; charset=UTF-8");
-
     private TypeAdapter<RequestType> requestAdapter;
     private TypeAdapter<ReturnType> responseAdapter;
     private Buffer buffer;
@@ -31,12 +29,15 @@ public final class GsonConverter<ReturnType, RequestType> implements Converter<R
     }
 
     @Override
-    public okhttp3.RequestBody convertRequestBody(RequestType requestObj) throws IOException {
+    public okhttp3.RequestBody convertRequestBody(MediaType contentType, RequestType requestObj) throws IOException {
+        if(contentType == null) {
+            contentType = MediaType.get("application/json; charset=UTF-8");
+        }
         Writer writer = new OutputStreamWriter(buffer.outputStream(), "UTF-8");
         JsonWriter jsonWriter = gson.newJsonWriter(writer);
         requestAdapter.write(jsonWriter, requestObj);
         jsonWriter.close();
-        return RequestBody.create(MEDIA_TYPE, buffer.readByteString());
+        return RequestBody.create(contentType, buffer.readByteString());
     }
 
     @Override

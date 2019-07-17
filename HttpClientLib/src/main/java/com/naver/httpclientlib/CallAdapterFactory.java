@@ -3,7 +3,7 @@ package com.naver.httpclientlib;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class CallAdapterFactory {
+class CallAdapterFactory {
 
     static CallAdapter<?, ?> create(Type returnType) {
         final Type responseType = Utils.getParameterUpperBound(0, (ParameterizedType) returnType);

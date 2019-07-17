@@ -4,7 +4,7 @@ import com.naver.httpclientlib.converter.Converter;
 
 import java.io.IOException;
 
-class RealCallTask<T> implements CallTask<T> {
+final class RealCallTask<T> implements CallTask<T> {
     HttpMethod httpMethod;
     RequestFactory requestFactory;
     okhttp3.Call.Factory okhttpCallFactory;
@@ -43,7 +43,7 @@ class RealCallTask<T> implements CallTask<T> {
         return false;
     }
 
-    private okhttp3.Call newOkhttpCall() {
+    private okhttp3.Call newOkhttpCall() throws IOException {
         okhttp3.Call call = okhttpCallFactory.newCall(requestFactory.create());
         if(call == null) {
             throw new NullPointerException("there is no matching call");
