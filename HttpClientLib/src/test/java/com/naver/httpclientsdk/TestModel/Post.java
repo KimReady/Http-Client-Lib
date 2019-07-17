@@ -5,12 +5,14 @@ public class Post {
     int id;
     String title;
     String body;
+    int like;   // not included in response data
 
-    public Post(int userId, int id, String title, String body) {
+    public Post(int userId, int id, String title, String body, int like) {
         this.userId = userId;
         this.id = id;
         this.title = title;
         this.body = body;
+        this.like = like;
     }
 
     public int getUserId() {
@@ -45,6 +47,14 @@ public class Post {
         this.body = body;
     }
 
+    public int getLike() {
+        return like;
+    }
+
+    public void setLike(int like) {
+        this.like = like;
+    }
+
     @Override
     public String toString() {
         return "Post{" +
@@ -52,6 +62,7 @@ public class Post {
                 ", id=" + id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
+                ", like=" + like +
                 '}';
     }
 }

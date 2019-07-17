@@ -1,5 +1,7 @@
 package com.naver.httpclientsdk.TestModel;
 
+import com.naver.httpclientlib.annotation.SkipThis;
+
 public class User {
     Integer id;
     String name;
@@ -92,10 +94,10 @@ public class User {
                 ", name='" + name + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", address=" + address.toString() +
+                ", address=" + address +
                 ", phone='" + phone + '\'' +
                 ", website='" + website + '\'' +
-                ", company=" + company.toString() +
+                ", company=" + company +
                 '}';
     }
 }

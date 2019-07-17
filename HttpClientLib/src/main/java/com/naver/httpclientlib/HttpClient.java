@@ -14,8 +14,8 @@ import okhttp3.OkHttpClient;
 import static com.naver.httpclientlib.Utils.checkNotNull;
 
 public final class HttpClient {
-    private HttpUrl baseUrl;
-    private okhttp3.Call.Factory callFactory;
+    private final HttpUrl baseUrl;
+    private final okhttp3.Call.Factory callFactory;
     private Converter converter;
 
     public HttpClient(Builder builder) {
@@ -32,10 +32,6 @@ public final class HttpClient {
         return (T) Proxy.newProxyInstance(service.getClassLoader()
                 , new Class<?>[]{service}
                 , new HttpInvocationHandler(this));
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = HttpUrl.get(baseUrl);
     }
 
     public void setConverter(Converter converter) {
