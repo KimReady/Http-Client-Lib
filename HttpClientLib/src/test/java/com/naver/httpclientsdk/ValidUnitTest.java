@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,11 @@ public class ValidUnitTest {
 
     @Test
     public void get_comments_by_postId_using_query() {
-        CallTask<List<Comment>> comments = validHttpService.getCommentsByPostId(2);
+        Integer[] postIds = new Integer[] {1, 3};
+        List<Integer> postIdList = new ArrayList<>();
+        postIdList.add(3);
+        postIdList.add(4);
+        CallTask<List<Comment>> comments = validHttpService.getCommentsByPostId(postIdList);
         try {
             List<Comment> result = comments.execute().body();
             for (Comment comment : result) {

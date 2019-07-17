@@ -3,6 +3,7 @@ package com.naver.httpclientsdk;
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.RequestMethod;
 import com.naver.httpclientlib.annotation.PathParam;
+import com.naver.httpclientlib.annotation.Queries;
 import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public interface ValidHttpService {
     CallTask<List<Comment>> getCommentsById(@PathParam("id") Integer id);
 
     @RequestMapping(value="/comments", method=RequestMethod.GET)
-    CallTask<List<Comment>> getCommentsByPostId(@Query("postId") Integer postId);
+    CallTask<List<Comment>> getCommentsByPostId(@Queries("postId") List<Integer> postId);
 
     @RequestMapping(value="/posts", method=RequestMethod.GET)
     CallTask<List<Post>> getPostsByUserId(@QueryMap Map<String, Integer> userId);

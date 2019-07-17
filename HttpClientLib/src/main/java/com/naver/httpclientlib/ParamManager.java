@@ -1,6 +1,8 @@
 package com.naver.httpclientlib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -12,12 +14,14 @@ class ParamManager {
     private Map<String, String> pathParams;
     private Map<String, String> queryParams;
     private Map<String, String> fieldParams;
+    private Map<String, List<String>> queriesParam;
 
     ParamManager() {
         headerParams = new HashMap<>();
         pathParams = new HashMap<>();
         queryParams = new HashMap<>();
         fieldParams = new HashMap<>();
+        queriesParam = new HashMap<>();
     }
 
     String replacePathParameters(String relUrl) {
@@ -34,10 +38,19 @@ class ParamManager {
     }
 
     HttpUrl addQuery(okhttp3.HttpUrl.Builder urlBuilder) {
-        Set<String> queryNames = queryParams.keySet();
+        Set<String> queryNames = queriesParam.keySet();
         for(String name : queryNames) {
-            urlBuilder.addEncodedQueryParameter(name, queryParams.get(name));
+            List<String> queries = queriesParam.get(name);
+            for(String query : queries) {
+                urlBuilder.addEncodedQueryParameter(name, query);
+            }
         }
+
+        queryNames = queryParams.keySet();
+        for(String name : queryNames) {
+            urlBuilder.addEncodedQueryParameter(name, String.valueOf(queryParams.get(name)));
+        }
+
         return urlBuilder.build();
     }
 
@@ -63,24 +76,20 @@ class ParamManager {
         queryParams.put(key, String.valueOf(value));
     }
 
+    void addQueriesParam(String key, String value) {
+        if(!queriesParam.containsKey(key)) {
+            List<String> values = new ArrayList<>();
+            values.add(value);
+            queriesParam.put(key, values);
+        } else {
+            List<String> values = queriesParam.get(key);
+            values.add(value);
+        }
+    }
+
     void addFieldParam(String key, Object value) {
         Utils.checkValidParam(key, value);
         fieldParams.put(key, String.valueOf(value));
     }
 
-    Map<String, String> getPathParams() {
-        return pathParams;
-    }
-
-    public Map<String, String> getHeaderParams() {
-        return headerParams;
-    }
-
-    public Map<String, String> getQueryParams() {
-        return queryParams;
-    }
-
-    public Map<String, String> getFieldParams() {
-        return fieldParams;
-    }
 }

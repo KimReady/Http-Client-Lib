@@ -6,6 +6,7 @@ import com.naver.httpclientlib.annotation.FormUrlEncoded;
 import com.naver.httpclientlib.annotation.Header;
 import com.naver.httpclientlib.annotation.HeaderMap;
 import com.naver.httpclientlib.annotation.PathParam;
+import com.naver.httpclientlib.annotation.Queries;
 import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestMapping;
@@ -51,13 +52,9 @@ public class RequestFactory {
         this.contentType = builder.contentType;
         this.isMultipart = builder.isMultipart;
         this.paramManager = builder.parameterManager;
-        this.okRequestBuilder = new okhttp3.Request.Builder();
-        if (isFormEncoded) {
-            formBuilder = new okhttp3.FormBody.Builder();
-        }
-        if (isMultipart) {
-            multipartBuilder = new okhttp3.MultipartBody.Builder();
-        }
+        this.okRequestBuilder = builder.okRequestBuilder;
+        this.formBuilder = builder.formBuilder;
+        this.multipartBuilder = builder.multipartBuilder;
     }
 
     okhttp3.Request create() {
@@ -116,6 +113,11 @@ public class RequestFactory {
         private MediaType contentType;
         private Object[] args;
 
+        private okhttp3.Request.Builder okRequestBuilder;
+        private okhttp3.FormBody.Builder formBuilder;
+        private okhttp3.MultipartBody.Builder multipartBuilder;
+        private okhttp3.RequestBody requestBody;
+
         public Builder(HttpClient httpClient, Method method, Object[] args) {
             this.callFactory = httpClient.getCallFactory();
             this.method = method;
@@ -125,11 +127,20 @@ public class RequestFactory {
             this.parameterAnnotations = method.getParameterAnnotations();
             this.isMultipart = false;
             this.args = args;
+            this.okRequestBuilder = new okhttp3.Request.Builder();
+
         }
 
         public RequestFactory build() {
             for (Annotation annotation : methodAnnotations) {
                 parseMethodAnnotation(annotation);
+            }
+
+            if (isFormEncoded) {
+                formBuilder = new okhttp3.FormBody.Builder();
+            }
+            if (isMultipart) {
+                multipartBuilder = new okhttp3.MultipartBody.Builder();
             }
 
             int paramCount = parameterAnnotations.length;
@@ -251,8 +262,14 @@ public class RequestFactory {
             } else if (annotation instanceof PathParam) {
                 parameterManager.addPathParam(((PathParam) annotation).value(), arg);
             } else if (annotation instanceof Query) {
-                Object encodedQuery = Utils.encodeQuery(arg, ((Query) annotation).encoded());
+                String encodedQuery = Utils.encodeQuery(arg, ((Query) annotation).encoded());
                 parameterManager.addQueryParam(((Query) annotation).value(), encodedQuery);
+            } else if (annotation instanceof Queries) {
+                List<Object> queries = Utils.checkIsList(arg);
+                for(Object query : queries) {
+                    String encodedQuery = Utils.encodeQuery(query, ((Queries) annotation).encoded());
+                    parameterManager.addQueriesParam(((Queries) annotation).value(), encodedQuery);
+                }
             } else if (annotation instanceof QueryMap) {
                 if (!(arg instanceof Map)) {
                     throw new IllegalArgumentException("The type of the '@QueryMap' must be a Map");

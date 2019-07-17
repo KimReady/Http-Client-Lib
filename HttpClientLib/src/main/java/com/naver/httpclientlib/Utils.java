@@ -11,6 +11,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +61,16 @@ public class Utils {
         throw new IllegalArgumentException("the type of '" + key + "' can't cast to String.");
     }
 
+    static List<Object> checkIsList(Object object) {
+        if(object instanceof Object[]) {
+            return Arrays.asList((Object[]) object);
+        } else if(object instanceof List) {
+            return (List<Object>) object;
+        }
+        throw new IllegalArgumentException("the type of '@Queries' must be Array or List.");
+    }
+
+
     /**
      * relative URL에서 {} 로 표기된 path parameter 검출
      * @param relUrl 변환되기 전 relative URL
@@ -70,9 +82,9 @@ public class Utils {
     /**
      * Encode Request Query value
      */
-    static Object encodeQuery(Object query, boolean isEncoded) {
+    static String encodeQuery(Object query, boolean isEncoded) {
         if (isEncoded) {
-            return query;
+            return String.valueOf(query);
         }
         try {
             return URLEncoder.encode(String.valueOf(query), "UTF-8");
@@ -84,9 +96,7 @@ public class Utils {
     static boolean checkResolvableType(Type type) {
         if (type instanceof Class<?>) {
             return false;
-        } else if (type instanceof TypeVariable) {
-            return true;
-        } else if (type instanceof WildcardType) {
+        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
             return true;
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
