@@ -1,5 +1,6 @@
 package com.naver.httpclientlib;
 
+import com.naver.httpclientlib.annotation.DynamicURL;
 import com.naver.httpclientlib.annotation.Field;
 import com.naver.httpclientlib.annotation.FieldMap;
 import com.naver.httpclientlib.annotation.FormUrlEncoded;
@@ -11,10 +12,12 @@ import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
+import com.naver.httpclientlib.annotation.URL;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +28,13 @@ import okhttp3.MediaType;
 
 class RequestFactory {
     private final HttpClient httpClient;
-    private final HttpUrl baseUrl;
     private final boolean hasBody;
     private final boolean isFormEncoded;
     private final Headers headers;
     private final MediaType contentType;
     private final ParamManager paramManager;
     final String httpMethod;
-    final String relativeUrl;
+    private final HttpUrl completedUrl;
 
     private okhttp3.Request.Builder okRequestBuilder;
     private okhttp3.FormBody.Builder formBuilder;
@@ -40,8 +42,6 @@ class RequestFactory {
 
     RequestFactory(Builder builder) {
         this.httpClient = builder.httpClient;
-        this.baseUrl = builder.baseUrl;
-        this.relativeUrl = builder.relativeUrl;
         this.hasBody = builder.hasBody;
         this.isFormEncoded = builder.isFormEncoded;
         this.httpMethod = builder.httpMethod;
@@ -50,23 +50,21 @@ class RequestFactory {
         this.paramManager = builder.parameterManager;
         this.okRequestBuilder = builder.okRequestBuilder;
         this.formBuilder = builder.formBuilder;
+        this.completedUrl = builder.completedUrl;
     }
 
     okhttp3.Request create() throws IOException {
         if (headers != null) {
             okRequestBuilder.headers(headers);
         }
-
-        HttpUrl completedUrl = paramManager.addQuery(baseUrl.newBuilder(relativeUrl));
         okRequestBuilder.url(completedUrl);
-
         paramManager.addHeaders(okRequestBuilder);
 
         if (isFormEncoded) {
             requestBody = formBuilder.build();
-        } else if(hasBody){
+        } else if (hasBody) {
             Object rawRequestBody = paramManager.getRawRequestBody();
-            if(rawRequestBody == null) {
+            if (rawRequestBody == null) {
                 throw new IllegalArgumentException("method " + httpMethod + " must have a request body.");
             }
             requestBody = httpClient.getConverter().convertRequestBody(contentType, rawRequestBody);
@@ -87,9 +85,12 @@ class RequestFactory {
         private boolean isMultipart;
         private String httpMethod;
         private String relativeUrl;
+        private HttpUrl completedUrl;
         private Headers headers;
         private MediaType contentType;
         private final Object[] args;
+        private boolean hasUrl;
+        private boolean isDynamicUrl;
 
         private okhttp3.Request.Builder okRequestBuilder;
         private okhttp3.FormBody.Builder formBuilder;
@@ -119,7 +120,12 @@ class RequestFactory {
                 }
             }
 
-            this.relativeUrl = replacePathParameters(relativeUrl);
+            if (!isDynamicUrl) {
+                this.relativeUrl = replacePathParameters(relativeUrl);
+                completedUrl = parameterManager.addQuery(baseUrl.newBuilder(relativeUrl));
+            }
+
+            Utils.checkNotNull(completedUrl, "URL is Null");
 
             return new RequestFactory(this);
         }
@@ -130,17 +136,29 @@ class RequestFactory {
          * @param annotation
          */
         private void parseMethodAnnotation(Annotation annotation) {
-            if (annotation instanceof RequestMapping) {
-                if (((RequestMapping) annotation).method() == RequestMethod.GET) {
-                    parseHttpMethodAndPath("GET", ((RequestMapping) annotation).value(), false);
-                } else if (((RequestMapping) annotation).method() == RequestMethod.DELETE) {
-                    parseHttpMethodAndPath("DELETE", ((RequestMapping) annotation).value(), false);
-                } else if (((RequestMapping) annotation).method() == RequestMethod.HEAD) {
-                    parseHttpMethodAndPath("HEAD", ((RequestMapping) annotation).value(), false);
-                } else if (((RequestMapping) annotation).method() == RequestMethod.POST) {
-                    parseHttpMethodAndPath("POST", ((RequestMapping) annotation).value(), true);
-                } else if (((RequestMapping) annotation).method() == RequestMethod.PUT) {
-                    parseHttpMethodAndPath("PUT", ((RequestMapping) annotation).value(), true);
+            if (annotation instanceof RequestMapping || annotation instanceof DynamicURL) {
+                if (hasUrl) {
+                    throw new IllegalArgumentException("You must use only one on your method, either @RequestMapping or @DynamicURL.");
+                }
+                hasUrl = true;
+                isDynamicUrl = (annotation instanceof DynamicURL) ? true : false;
+                RequestMethod requestMethod = (annotation instanceof RequestMapping) ?
+                        ((RequestMapping) annotation).method() :
+                        ((DynamicURL) annotation).method();
+
+                String relUrl = (annotation instanceof RequestMapping) ?
+                        ((RequestMapping) annotation).value() : null;
+
+                if (requestMethod == RequestMethod.GET) {
+                    parseHttpMethodAndPath("GET", relUrl, false);
+                } else if (requestMethod == RequestMethod.DELETE) {
+                    parseHttpMethodAndPath("DELETE", relUrl, false);
+                } else if (requestMethod == RequestMethod.HEAD) {
+                    parseHttpMethodAndPath("HEAD", relUrl, false);
+                } else if (requestMethod == RequestMethod.POST) {
+                    parseHttpMethodAndPath("POST", relUrl, true);
+                } else if (requestMethod == RequestMethod.PUT) {
+                    parseHttpMethodAndPath("PUT", relUrl, true);
                 }
             } else if (annotation instanceof com.naver.httpclientlib.annotation.Headers) {
                 String[] headersToParse = ((com.naver.httpclientlib.annotation.Headers) annotation).value();
@@ -163,13 +181,10 @@ class RequestFactory {
          * @param hasBody    whether having a request body
          */
         private void parseHttpMethodAndPath(String httpMethod, String relUrl, boolean hasBody) {
-            if (this.httpMethod != null) {
-                throw new IllegalArgumentException("Only one HTTP method is allowed.");
-            }
             this.httpMethod = httpMethod;
             this.hasBody = hasBody;
 
-            if (!relUrl.isEmpty()) {
+            if (relUrl != null) {
                 this.relativeUrl = relUrl;
             }
         }
@@ -212,17 +227,29 @@ class RequestFactory {
                     parameterManager.addHeaderParam(key, headerMap.get(key));
                 }
             } else if (annotation instanceof PathParam) {
+                if(isDynamicUrl) {
+                    throw new IllegalArgumentException("You can't use @PathParam with @DynamicURL.");
+                }
                 parameterManager.addPathParam(((PathParam) annotation).value(), arg);
             } else if (annotation instanceof Query) {
+                if(isDynamicUrl) {
+                    throw new IllegalArgumentException("You can't use @Query with @DynamicURL.");
+                }
                 String encodedQuery = Utils.encodeQuery(arg, ((Query) annotation).encoded());
                 parameterManager.addQueryParam(((Query) annotation).value(), encodedQuery);
             } else if (annotation instanceof Queries) {
+                if(isDynamicUrl) {
+                    throw new IllegalArgumentException("You can't use @Queries with @DynamicURL.");
+                }
                 List<Object> queries = Utils.checkIsList(arg);
-                for(Object query : queries) {
+                for (Object query : queries) {
                     String encodedQuery = Utils.encodeQuery(query, ((Queries) annotation).encoded());
                     parameterManager.addQueriesParam(((Queries) annotation).value(), encodedQuery);
                 }
             } else if (annotation instanceof QueryMap) {
+                if(isDynamicUrl) {
+                    throw new IllegalArgumentException("You can't use @QueryMap with @DynamicURL.");
+                }
                 if (!(arg instanceof Map)) {
                     throw new IllegalArgumentException("The type of the '@QueryMap' must be a Map");
                 }
@@ -233,17 +260,17 @@ class RequestFactory {
                     parameterManager.addQueryParam(key, encodedQuery);
                 }
             } else if (annotation instanceof Field) {
-                if(!isFormEncoded) {
-                    throw new IllegalArgumentException("'@Field' needs a '@FormUrlEncoded' above the method.");
+                if (!isFormEncoded) {
+                    throw new IllegalArgumentException("'@Field' needs a '@FormUrlEncoded' on your method.");
                 }
-                if(((Field) annotation).encoded()) {
+                if (((Field) annotation).encoded()) {
                     formBuilder.addEncoded(((Field) annotation).value(), String.valueOf(arg));
                 } else {
                     formBuilder.add(((Field) annotation).value(), String.valueOf(arg));
                 }
             } else if (annotation instanceof FieldMap) {
-                if(!isFormEncoded) {
-                    throw new IllegalArgumentException("'@FieldMap' needs a '@FormUrlEncoded' above the method.");
+                if (!isFormEncoded) {
+                    throw new IllegalArgumentException("'@FieldMap' needs a '@FormUrlEncoded' on your method.");
                 }
                 if (!(arg instanceof Map)) {
                     throw new IllegalArgumentException("The type of the '@FieldMap' must be a Map");
@@ -252,17 +279,26 @@ class RequestFactory {
                 Set<String> keySet = fieldMap.keySet();
                 boolean encoded = (((FieldMap) annotation).encoded());
                 for (String key : keySet) {
-                    if(encoded) {
+                    if (encoded) {
                         formBuilder.add(key, String.valueOf(fieldMap.get(key)));
                     } else {
                         formBuilder.addEncoded(key, String.valueOf(fieldMap.get(key)));
                     }
                 }
             } else if (annotation instanceof RequestBody) {
-                if(!hasBody) {
+                if (!hasBody) {
                     throw new IllegalArgumentException(httpMethod + " method cannot have a request body.");
                 }
                 parameterManager.setRawRequestBody(arg);
+            } else if (annotation instanceof URL) {
+                if (!(arg instanceof String || arg instanceof java.net.URL
+                        || arg instanceof URI || arg instanceof HttpUrl)) {
+                    throw new IllegalArgumentException("The @URL value must be of type String, URL, URI, or HttpUrl.");
+                }
+                if (completedUrl != null) {
+                    throw new IllegalArgumentException("You can use @URL once.");
+                }
+                completedUrl = Utils.getHttpUrl(arg);
             }
         }
     }

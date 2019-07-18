@@ -1,5 +1,6 @@
 package com.naver.httpclientlib;
 
+import com.naver.httpclientlib.annotation.DynamicURL;
 import com.naver.httpclientlib.annotation.RequestMapping;
 
 import java.io.UnsupportedEncodingException;
@@ -10,13 +11,16 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class Utils {
+import okhttp3.HttpUrl;
+
+final class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
     private Utils(){}
@@ -44,11 +48,11 @@ public final class Utils {
 
         Annotation[] annotations = method.getDeclaredAnnotations();
         for (Annotation annotation : annotations) {
-            if (annotation instanceof RequestMapping) {
+            if (annotation instanceof RequestMapping || annotation instanceof DynamicURL) {
                 return;
             }
         }
-        throw new UnsupportedOperationException("please add a annotation '@RequestMapping' above the method. ");
+        throw new UnsupportedOperationException("please add a annotation '@RequestMapping' or '@DynamicURL' on your method. ");
     }
 
     /**
@@ -115,7 +119,7 @@ public final class Utils {
         throw new IllegalArgumentException("Expected a Class, ParameterizedType or GenericArrayType");
     }
 
-    public static Type getParameterUpperBound(int index, ParameterizedType type) {
+    static Type getParameterUpperBound(int index, ParameterizedType type) {
         Type paramType = type.getActualTypeArguments()[index];
         if (paramType instanceof WildcardType) {
             return ((WildcardType) paramType).getUpperBounds()[0];
@@ -123,16 +127,14 @@ public final class Utils {
         return paramType;
     }
 
-    static String hasToString(Object object) {
-        if(object instanceof String) {
-            return String.valueOf(object);
+    static HttpUrl getHttpUrl(Object url) {
+        if(url instanceof String) {
+            return HttpUrl.get((String) url);
+        } else if(url instanceof java.net.URL || url instanceof URI) {
+            return HttpUrl.get(url.toString());
+        } else if(url instanceof HttpUrl) {
+            return (HttpUrl) url;
         }
-        Method[] methods = object.getClass().getDeclaredMethods();
-        for(Method method : methods) {
-            if(method.getName().equals("toString")) {
-                return object.toString();
-            }
-        }
-        throw new IllegalArgumentException(object.getClass() + " must implement 'toString()' method or be type of String.");
+        return null;
     }
 }

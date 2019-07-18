@@ -12,6 +12,7 @@ import com.naver.httpclientsdk.mock.User;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ValidServiceTest {
             for (Post post : result) {
                 System.out.println(post.toString());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -46,7 +47,7 @@ public class ValidServiceTest {
         try {
             Post result = post.execute().body();
             System.out.println(result.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -58,7 +59,7 @@ public class ValidServiceTest {
         try {
             SkipPost result = skippost.execute().body();
             System.out.println(result.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -72,7 +73,7 @@ public class ValidServiceTest {
             for (Comment comment : result) {
                 System.out.println(comment.toString());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -90,7 +91,7 @@ public class ValidServiceTest {
             for (Comment comment : result) {
                 System.out.println(comment.toString());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -107,7 +108,7 @@ public class ValidServiceTest {
             for (Post post : result) {
                 System.out.println(post.toString());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -119,7 +120,7 @@ public class ValidServiceTest {
         try {
             Response<List<Post>> res = posts.execute();
             System.out.println(res.header("content-type"));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -131,7 +132,7 @@ public class ValidServiceTest {
         try {
             Response<List<Post>> res = posts.execute();
             System.out.println(res.header("content-type"));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -146,7 +147,7 @@ public class ValidServiceTest {
             for (User user : result) {
                 System.out.println(user.toString());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -158,7 +159,7 @@ public class ValidServiceTest {
         try {
             Response<Post> p = post.execute();
             System.out.println(p.header("content-type"));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -172,7 +173,7 @@ public class ValidServiceTest {
             Response<Post> response = call.execute();
             Post post = response.body();
             System.out.println(post);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -184,7 +185,7 @@ public class ValidServiceTest {
         try {
             Response<Void> res = posts.execute();
             System.out.println(res.header("content-type"));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -196,7 +197,7 @@ public class ValidServiceTest {
         try {
             Post result = post.execute().body();
             System.out.println(result.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -209,7 +210,7 @@ public class ValidServiceTest {
         try {
             Post result = post.execute().body();
             System.out.println(result.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -217,6 +218,15 @@ public class ValidServiceTest {
 
     @Test
     public void get_posts_using_dynamic_url() {
-
+        try {
+            CallTask<List<Post>> call = validHttpService.getPostsByDynamicURL("http://jsonplaceholder.typicode.com/posts");
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
     }
 }

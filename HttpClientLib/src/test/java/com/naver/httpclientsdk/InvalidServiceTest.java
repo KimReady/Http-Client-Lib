@@ -118,7 +118,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_posts_By_Null_Of_Dynamic_URL() {
+    public void get_posts_by_null_of_dynamic_url() {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsByNullOfDynamicURL(null);
             List<Post> posts = call.execute().body();
@@ -134,9 +134,25 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_posts_Without_URL() {
+    public void get_posts_without_url() {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsWithoutURL();
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void get_posts_using_dynamic_url_with_query() {
+        try {
+            CallTask<List<Post>> call = invalidHttpService.getPostsUsingDynamicURLWithQuery("http://jsonplaceholder.typicode.com/posts", 3);
             List<Post> posts = call.execute().body();
             for(Post post : posts) {
                 System.out.println(post);
