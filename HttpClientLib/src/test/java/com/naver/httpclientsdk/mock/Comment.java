@@ -1,4 +1,4 @@
-package com.naver.httpclientsdk.TestModel;
+package com.naver.httpclientsdk.mock;
 
 public class Comment {
     int postId;

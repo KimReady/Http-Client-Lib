@@ -30,7 +30,7 @@ public final class Response<T> {
         try {
             return converter.convertResponseBody(rawResponse.body());
         } catch(IOException e) {
-            throw new IOException("Failed to convert with response.");
+            throw e;
         }
     }
 }

@@ -3,9 +3,11 @@ package com.naver.httpclientsdk;
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.HttpClient;
 import com.naver.httpclientlib.Response;
-import com.naver.httpclientsdk.TestModel.Comment;
-import com.naver.httpclientsdk.TestModel.Post;
-import com.naver.httpclientsdk.TestModel.User;
+import com.naver.httpclientsdk.mockInterface.ValidHttpService;
+import com.naver.httpclientsdk.mock.Comment;
+import com.naver.httpclientsdk.mock.Post;
+import com.naver.httpclientsdk.mock.SkipPost;
+import com.naver.httpclientsdk.mock.User;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +20,7 @@ import java.util.Map;
 /**
  * valid unit test for HttpClient
  */
-public class ValidUnitTest {
+public class ValidServiceTest {
     HttpClient httpClient = new HttpClient.Builder("http://jsonplaceholder.typicode.com")
             .build();
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
@@ -43,6 +45,18 @@ public class ValidUnitTest {
         CallTask<Post> post = validHttpService.getPostsById(5);
         try {
             Post result = post.execute().body();
+            System.out.println(result.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void get_posts_skip_title_by_id_using_path_param() {
+        CallTask<SkipPost> skippost = validHttpService.getPostsSkipTitleById(5);
+        try {
+            SkipPost result = skippost.execute().body();
             System.out.println(result.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,6 +114,30 @@ public class ValidUnitTest {
     }
 
     @Test
+    public void get_method_with_header() {
+        CallTask<List<Post>> posts = validHttpService.getPostsWithHeader("text/html");
+        try {
+            Response<List<Post>> res = posts.execute();
+            System.out.println(res.header("content-type"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void get_method_with_headers() {
+        CallTask<List<Post>> posts = validHttpService.getPostsWithHeaders();
+        try {
+            Response<List<Post>> res = posts.execute();
+            System.out.println(res.header("content-type"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void get_users_using_composite_object() {
         CallTask<List<User>> users = validHttpService.getUsers();
         try {
@@ -118,7 +156,22 @@ public class ValidUnitTest {
     public void delete_posts_by_id() {
         CallTask<Post> post = validHttpService.deletePostById(5);
         try {
-            post.execute();
+            Response<Post> p = post.execute();
+            System.out.println(p.header("content-type"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void put_posts_by_id() {
+        Post newPost = new Post(4, 5, "new sample title", "new sample body", 300);
+        CallTask<Post> call = validHttpService.putPostsById(5, newPost);
+        try {
+            Response<Post> response = call.execute();
+            Post post = response.body();
+            System.out.println(post);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();

@@ -32,6 +32,10 @@ class ParamManager {
                 throw new IllegalArgumentException("there is no matching parameter to '" + paramName + "'.");
             }
             relUrl = relUrl.replace(pathParam, pathParams.get(paramName));
+            pathParams.remove(paramName);
+        }
+        if(!pathParams.isEmpty()) {
+            throw new IllegalArgumentException("there is(are) unmatched path parameter(s).");
         }
         return relUrl;
     }
@@ -67,6 +71,9 @@ class ParamManager {
 
     void addPathParam(String key, Object value) {
         Utils.checkValidParam(key, value);
+        if(pathParams.containsKey(key)) {
+            throw new IllegalArgumentException("Duplicate key value of '" + key + "'");
+        }
         pathParams.put(key, String.valueOf(value));
     }
 

@@ -1,6 +1,4 @@
-package com.naver.httpclientsdk.TestModel;
-
-import com.naver.httpclientlib.annotation.SkipThis;
+package com.naver.httpclientsdk.mock;
 
 public class User {
     Integer id;

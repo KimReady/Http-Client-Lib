@@ -70,6 +70,9 @@ class RequestFactory {
             requestBody = formBuilder.build();
         } else if(hasBody){
             Object rawRequestBody = paramManager.getRawRequestBody();
+            if(rawRequestBody == null) {
+                throw new IllegalArgumentException("method " + httpMethod + " must have a request body.");
+            }
             requestBody = httpClient.getConverter().convertRequestBody(contentType, rawRequestBody);
         }
 
@@ -265,6 +268,9 @@ class RequestFactory {
                     }
                 }
             } else if (annotation instanceof RequestBody) {
+                if(!hasBody) {
+                    throw new IllegalArgumentException(httpMethod + " method cannot have a request body.");
+                }
                 parameterManager.setRawRequestBody(arg);
             }
         }
