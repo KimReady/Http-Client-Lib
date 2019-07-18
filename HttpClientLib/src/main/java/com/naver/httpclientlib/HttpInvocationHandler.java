@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 class HttpInvocationHandler implements InvocationHandler {
     private final HttpClient httpClient;
 
-    public HttpInvocationHandler(HttpClient httpClient) {
+    HttpInvocationHandler(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 

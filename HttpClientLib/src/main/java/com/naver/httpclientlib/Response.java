@@ -27,10 +27,6 @@ public final class Response<T> {
     }
 
     public T body() throws IOException {
-        try {
-            return converter.convertResponseBody(rawResponse.body());
-        } catch(IOException e) {
-            throw e;
-        }
+        return converter.convertResponseBody(rawResponse.body());
     }
 }

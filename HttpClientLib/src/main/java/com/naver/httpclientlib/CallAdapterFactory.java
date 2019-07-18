@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 
 class CallAdapterFactory {
 
+    private CallAdapterFactory(){}
+
     static CallAdapter<?, ?> create(Type returnType) {
         final Type responseType = Utils.getParameterUpperBound(0, (ParameterizedType) returnType);
 

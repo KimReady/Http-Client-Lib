@@ -33,7 +33,7 @@ class HttpMethod<ResponseT> {
         this.requestFactory = requestFactory;
     }
 
-    public CallTask<ResponseT> invoke() {
+    CallTask<ResponseT> invoke() {
         return new RealCallTask<ResponseT>(this,
                 requestFactory, httpClient.getCallFactory(), httpClient.getConverter());
     }

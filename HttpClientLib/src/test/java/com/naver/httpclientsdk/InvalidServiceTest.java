@@ -22,9 +22,14 @@ public class InvalidServiceTest {
 
     @Test(expected = RuntimeException.class)
     public void return_type_not_CallTask() {
-        List<Post> posts = invalidHttpService.getWithIllegalReturnType();
-        for (Post post : posts) {
-            System.out.println(post.toString());
+        try {
+            List<Post> posts = invalidHttpService.getWithIllegalReturnType();
+            for (Post post : posts) {
+                System.out.println(post.toString());
+            }
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -36,6 +41,9 @@ public class InvalidServiceTest {
             System.out.println(result.toString());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -47,12 +55,20 @@ public class InvalidServiceTest {
             System.out.println(result.toString());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
     @Test(expected = RuntimeException.class)
     public void more_actual_path_parameters_than_url_path_parameters() {
-        CallTask<Post> post = invalidHttpService.getMoreActualPathParamThanUrl(5, "title test");
+        try {
+            CallTask<Post> post = invalidHttpService.getMoreActualPathParamThanUrl(5, "title test");
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Test(expected = RuntimeException.class)
@@ -65,6 +81,9 @@ public class InvalidServiceTest {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -76,7 +95,57 @@ public class InvalidServiceTest {
             System.out.println(response.body());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
+    @Test(expected = RuntimeException.class)
+    public void get_posts_duplicate_url() {
+        try {
+            CallTask<List<Post>> call = invalidHttpService.getPostsDuplicateURL("http://jsonplaceholder.typicode.com/posts");
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void get_posts_By_Null_Of_Dynamic_URL() {
+        try {
+            CallTask<List<Post>> call = invalidHttpService.getPostsByNullOfDynamicURL(null);
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void get_posts_Without_URL() {
+        try {
+            CallTask<List<Post>> call = invalidHttpService.getPostsWithoutURL();
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

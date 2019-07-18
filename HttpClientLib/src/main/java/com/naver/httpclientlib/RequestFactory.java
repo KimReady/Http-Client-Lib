@@ -28,7 +28,6 @@ class RequestFactory {
     private final HttpUrl baseUrl;
     private final boolean hasBody;
     private final boolean isFormEncoded;
-    private final boolean isMultipart;
     private final Headers headers;
     private final MediaType contentType;
     private final ParamManager paramManager;
@@ -37,7 +36,6 @@ class RequestFactory {
 
     private okhttp3.Request.Builder okRequestBuilder;
     private okhttp3.FormBody.Builder formBuilder;
-    private okhttp3.MultipartBody.Builder multipartBuilder;
     private okhttp3.RequestBody requestBody;
 
     RequestFactory(Builder builder) {
@@ -49,11 +47,9 @@ class RequestFactory {
         this.httpMethod = builder.httpMethod;
         this.headers = builder.headers;
         this.contentType = builder.contentType;
-        this.isMultipart = builder.isMultipart;
         this.paramManager = builder.parameterManager;
         this.okRequestBuilder = builder.okRequestBuilder;
         this.formBuilder = builder.formBuilder;
-        this.multipartBuilder = builder.multipartBuilder;
     }
 
     okhttp3.Request create() throws IOException {
@@ -79,7 +75,7 @@ class RequestFactory {
         return okRequestBuilder.method(httpMethod, requestBody).build();
     }
 
-    public static class Builder {
+    static class Builder {
         private final HttpClient httpClient;
         private final Annotation[] methodAnnotations;
         private final Annotation[][] parameterAnnotations;
@@ -97,7 +93,6 @@ class RequestFactory {
 
         private okhttp3.Request.Builder okRequestBuilder;
         private okhttp3.FormBody.Builder formBuilder;
-        private okhttp3.MultipartBody.Builder multipartBuilder;
 
         public Builder(HttpClient httpClient, Method method, Object[] args) {
             this.httpClient = httpClient;
@@ -113,10 +108,6 @@ class RequestFactory {
         public RequestFactory build() {
             for (Annotation annotation : methodAnnotations) {
                 parseMethodAnnotation(annotation);
-            }
-
-            if (isMultipart) {
-                multipartBuilder = new okhttp3.MultipartBody.Builder();
             }
 
             int paramCount = parameterAnnotations.length;

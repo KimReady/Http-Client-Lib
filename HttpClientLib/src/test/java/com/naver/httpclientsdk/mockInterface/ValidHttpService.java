@@ -2,6 +2,7 @@ package com.naver.httpclientsdk.mockInterface;
 
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.RequestMethod;
+import com.naver.httpclientlib.annotation.DynamicURL;
 import com.naver.httpclientlib.annotation.Field;
 import com.naver.httpclientlib.annotation.FormUrlEncoded;
 import com.naver.httpclientlib.annotation.Header;
@@ -11,6 +12,7 @@ import com.naver.httpclientlib.annotation.Queries;
 import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
+import com.naver.httpclientlib.annotation.URL;
 import com.naver.httpclientsdk.mock.Comment;
 import com.naver.httpclientsdk.mock.Post;
 import com.naver.httpclientsdk.mock.SkipPost;
@@ -63,4 +65,7 @@ public interface ValidHttpService {
 
     @RequestMapping(value="/posts", method=RequestMethod.HEAD)
     CallTask<Void> getPostsForHeadMethod();
+
+    @DynamicURL(method=RequestMethod.GET)
+    CallTask<List<Post>> getPostsByDynamicURL(@URL String url);
 }

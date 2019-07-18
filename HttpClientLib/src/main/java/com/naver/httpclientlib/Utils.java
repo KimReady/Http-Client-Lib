@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 public final class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
+    private Utils(){}
+
     /**
      * object가 Null 여부 검사
      *

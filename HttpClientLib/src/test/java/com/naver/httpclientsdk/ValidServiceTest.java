@@ -216,12 +216,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void java_test() {
-        try {
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-    }
+    public void get_posts_using_dynamic_url() {
 
+    }
 }
