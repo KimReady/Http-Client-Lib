@@ -6,6 +6,7 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.ConnectionSpec;
 import okhttp3.HttpUrl;
@@ -57,6 +58,7 @@ public final class HttpClient {
         private final HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
+        private long timeout;
 
         public Builder(String baseUrl) {
             this(HttpUrl.get(baseUrl));
@@ -73,6 +75,7 @@ public final class HttpClient {
         public Builder(HttpUrl baseUrl) {
             checkNotNull(baseUrl, "URL is null");
             this.baseUrl = baseUrl;
+            this.timeout = 0;
         }
 
         public Builder converter(Converter converter) {
@@ -85,6 +88,11 @@ public final class HttpClient {
             return this;
         }
 
+        public Builder timeout(long timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
         public HttpClient build() {
             if (baseUrl == null) {
                 throw new IllegalStateException("BaseURL is needed");
@@ -94,6 +102,7 @@ public final class HttpClient {
                 // TLS -> CLEARTEXT 순으로 연결 시도
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
+                        .callTimeout(timeout, TimeUnit.MILLISECONDS)
                         .build();
             }
 
