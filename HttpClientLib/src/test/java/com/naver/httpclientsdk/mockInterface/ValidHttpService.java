@@ -9,6 +9,7 @@ import com.naver.httpclientlib.annotation.Header;
 import com.naver.httpclientlib.annotation.Headers;
 import com.naver.httpclientlib.annotation.PathParam;
 import com.naver.httpclientlib.annotation.Queries;
+import com.naver.httpclientlib.annotation.Query;
 import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
@@ -68,4 +69,7 @@ public interface ValidHttpService {
 
     @DynamicURL(method=RequestMethod.GET)
     CallTask<List<Post>> getPostsByDynamicURL(@URL String url);
+
+    @DynamicURL(method=RequestMethod.GET)
+    CallTask<List<Post>> getPostsByDynamicURLWithQuery(@URL String url, @Query("id") int id);
 }

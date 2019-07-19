@@ -79,6 +79,8 @@ class RequestFactory {
             Utils.checkNotNull(baseUrl, "if you don't use @DynamicURL, you need to set the baseURL when creating the HttpClient Object.");
             this.relativeUrl = replacePathParameters(relativeUrl);
             completedUrl = parameterManager.addQueryToUrl(baseUrl.newBuilder(relativeUrl));
+        } else {
+            completedUrl = parameterManager.addQueryToUrl(completedUrl.newBuilder());
         }
 
         return this;
@@ -198,7 +200,6 @@ class RequestFactory {
             Utils.checkIsFalse(isDynamicUrl, "You can't use @PathParam with @DynamicURL.");
             parameterManager.addPathParam(((PathParam) annotation).value(), arg);
         } else if (annotation instanceof Query || annotation instanceof Queries || annotation instanceof QueryMap) {
-            Utils.checkIsFalse(isDynamicUrl, "You can't use @Query with @DynamicURL.");
             parameterManager.addQuery(annotation, arg);
         } else if (annotation instanceof Field || annotation instanceof FieldMap) {
             Utils.checkIsTrue(isFormEncoded, "'@Field' needs a '@FormUrlEncoded' on your method.");

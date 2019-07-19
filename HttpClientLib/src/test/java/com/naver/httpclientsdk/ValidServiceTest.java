@@ -244,4 +244,18 @@ public class ValidServiceTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void get_posts_using_dynamic_url_with_query() {
+        try {
+            CallTask<List<Post>> call = validHttpService.getPostsByDynamicURLWithQuery("http://jsonplaceholder.typicode.com/posts?pw=1", 3);
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
 }
