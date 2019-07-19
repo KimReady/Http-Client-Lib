@@ -29,4 +29,8 @@ public final class Response<T> {
     public T body() throws IOException {
         return converter.convertResponseBody(rawResponse.body());
     }
+
+    public int code() {
+        return rawResponse.code();
+    }
 }

@@ -55,27 +55,27 @@ public final class HttpClient {
      * Builder
      */
     public static final class Builder {
-        private final HttpUrl baseUrl;
+        private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
         private long timeout;
 
-        public Builder(String baseUrl) {
-            this(HttpUrl.get(baseUrl));
+        public Builder baseUrl(String baseUrl) {
+            return baseUrl(HttpUrl.get(baseUrl));
         }
 
-        public Builder(URL baseUrl) {
-            this(HttpUrl.get(baseUrl));
+        public Builder baseUrl(URL baseUrl) {
+            return baseUrl(HttpUrl.get(baseUrl));
         }
 
-        public Builder(URI baseUrl) {
-            this(HttpUrl.get(baseUrl));
+        public Builder baseUrl(URI baseUrl) {
+            return baseUrl(HttpUrl.get(baseUrl));
         }
 
-        public Builder(HttpUrl baseUrl) {
-            checkNotNull(baseUrl, "URL is null");
+        public Builder baseUrl(HttpUrl baseUrl) {
+            checkNotNull(baseUrl, "base URL is null");
             this.baseUrl = baseUrl;
-            this.timeout = 0;
+            return this;
         }
 
         public Builder converter(Converter converter) {
@@ -94,12 +94,8 @@ public final class HttpClient {
         }
 
         public HttpClient build() {
-            if (baseUrl == null) {
-                throw new IllegalStateException("BaseURL is needed");
-            }
-
             if (callFactory == null) {
-                // TLS -> CLEARTEXT 순으로 연결 시도
+                // TLS -> CLEARTEXT 순으로 연결 시도하도록 설정
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
                         .callTimeout(timeout, TimeUnit.MILLISECONDS)

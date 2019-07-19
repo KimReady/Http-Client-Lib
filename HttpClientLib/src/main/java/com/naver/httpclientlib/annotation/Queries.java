@@ -12,4 +12,5 @@ public @interface Queries {
     String value();
 
     boolean encoded() default false;
+    String encodeType() default "UTF-8";
 }

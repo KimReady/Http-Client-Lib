@@ -4,50 +4,65 @@ import com.naver.httpclientlib.converter.Converter;
 
 import java.io.IOException;
 
-final class RealCallTask<T> implements CallTask<T> {
-    HttpMethod httpMethod;
-    RequestFactory requestFactory;
-    okhttp3.Call.Factory okhttpCallFactory;
-    okhttp3.Call okhttpCall;
-    Converter<T, ?> converter;
+import okhttp3.Call;
 
-    RealCallTask(HttpMethod httpMethod, RequestFactory requestFactory,
+class RealCallTask<T> implements CallTask<T> {
+    private RequestFactory requestFactory;
+    private okhttp3.Call.Factory okhttpCallFactory;
+    private final okhttp3.Call okhttpCall;
+    private Converter converter;
+    private boolean isCanceled;
+
+    RealCallTask(RequestFactory requestFactory,
                  okhttp3.Call.Factory okhttpCallFactory, Converter<T, ?> converter) {
-        this.httpMethod = httpMethod;
         this.requestFactory = requestFactory;
         this.okhttpCallFactory = okhttpCallFactory;
         this.converter = converter;
+        this.isCanceled = false;
+        this.okhttpCall = newOkhttpCall();
     }
 
     @Override
     public Response<T> execute() throws IOException {
-        if(okhttpCall == null) {
-            okhttpCall = newOkhttpCall();
-        }
-
         return convertResponse(okhttpCall.execute());
     }
 
     @Override
-    public void enqueue() {
+    public void enqueue(final CallBack callback) {
+        okhttpCall.enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(null, e);
+            }
 
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                callback.onResponse(null);
+            }
+        });
     }
 
     @Override
     public void cancel() {
-
+        if (okhttpCall != null) {
+            isCanceled = true;
+            okhttpCall.cancel();
+        }
     }
 
     @Override
     public boolean isCanceled() {
-        return false;
+        return isCanceled;
     }
 
-    private okhttp3.Call newOkhttpCall() throws IOException {
-        okhttp3.Call call = okhttpCallFactory.newCall(requestFactory.create());
-        if(call == null) {
-            throw new NullPointerException("there is no matching call");
+    private okhttp3.Call newOkhttpCall() {
+        okhttp3.Call call;
+        try {
+            call = okhttpCallFactory.newCall(requestFactory.create());
+        } catch (IOException e) {
+            throw new IllegalStateException("can't create Call, because of " + e.getMessage());
         }
+        Utils.checkNotNull(call, "there is no matching call");
         return call;
     }
 

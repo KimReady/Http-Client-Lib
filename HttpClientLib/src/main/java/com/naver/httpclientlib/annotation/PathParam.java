@@ -10,6 +10,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface PathParam {
     String value();
-
-    boolean encoded() default false;
 }

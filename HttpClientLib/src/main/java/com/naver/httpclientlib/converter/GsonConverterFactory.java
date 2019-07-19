@@ -20,7 +20,6 @@ public class GsonConverterFactory {
     private GsonConverterFactory() {
         this.gson = new GsonBuilder()
                 .setExclusionStrategies(new SkipThisExclustionStrategy())
-                .setLenient()
                 .create();
     }
 

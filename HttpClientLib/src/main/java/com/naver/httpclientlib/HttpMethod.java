@@ -3,18 +3,19 @@ package com.naver.httpclientlib;
 import com.naver.httpclientlib.converter.GsonConverterFactory;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
+import static com.naver.httpclientlib.RequestMethod.HEAD;
 
 class HttpMethod<ResponseT> {
 
     static HttpMethod create(HttpClient httpClient, Method method, Object[] args) {
-        RequestFactory requestFactory = new RequestFactory.Builder(httpClient, method, args).build();
+        RequestFactory requestFactory = new RequestFactory(httpClient, method, args).initialize();
 
-        Type adapterType = method.getGenericReturnType();
-
-        CallAdapter<?, ?> callAdapter =  CallAdapterFactory.create(adapterType);
-        Type responseType = callAdapter.responseType();
-        if(requestFactory.httpMethod.equals("HEAD") && !Void.class.equals(responseType)) {
+        Type returnType = method.getGenericReturnType();
+        Type responseType = Utils.getParameterUpperBound(0, (ParameterizedType) returnType);
+        if(requestFactory.httpMethod() == HEAD && !Void.class.equals(responseType)) {
             throw new IllegalArgumentException("HEAD method must use Void as response type.");
         }
 
@@ -34,7 +35,6 @@ class HttpMethod<ResponseT> {
     }
 
     CallTask<ResponseT> invoke() {
-        return new RealCallTask<ResponseT>(this,
-                requestFactory, httpClient.getCallFactory(), httpClient.getConverter());
+        return new RealCallTask<>(requestFactory, httpClient.getCallFactory(), httpClient.getConverter());
     }
 }

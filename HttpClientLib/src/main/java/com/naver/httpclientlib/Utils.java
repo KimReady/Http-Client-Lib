@@ -5,11 +5,9 @@ import com.naver.httpclientlib.annotation.RequestMapping;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -20,7 +18,7 @@ import java.util.regex.Pattern;
 
 import okhttp3.HttpUrl;
 
-final class Utils {
+class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
     private Utils(){}
@@ -36,6 +34,18 @@ final class Utils {
             throw new NullPointerException(message);
         }
         return object;
+    }
+
+    static void checkIsFalse(boolean bool, String message) {
+        if(bool) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    static void checkIsTrue(boolean bool, String message) {
+        if(!bool) {
+            throw new IllegalStateException(message);
+        }
     }
 
     /**
@@ -88,35 +98,15 @@ final class Utils {
     /**
      * Encode Request Query value
      */
-    static String encodeQuery(Object query, boolean isEncoded) {
+    static String encodeQuery(Object query, String encodeType, boolean isEncoded) {
         if (isEncoded) {
             return String.valueOf(query);
         }
         try {
-            return URLEncoder.encode(String.valueOf(query), "UTF-8");
+            return URLEncoder.encode(String.valueOf(query), encodeType);
         } catch (UnsupportedEncodingException e) {
             return null;
         }
-    }
-
-    static boolean checkResolvableType(Type type) {
-        if (type instanceof Class<?>) {
-            return false;
-        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
-            return true;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            for (Type typeArgument : parameterizedType.getActualTypeArguments()) {
-                if (checkResolvableType(typeArgument)) {
-                    return true;
-                }
-            }
-            return false;
-        } else if (type instanceof GenericArrayType) {
-            return checkResolvableType(((GenericArrayType) type).getGenericComponentType());
-        }
-
-        throw new IllegalArgumentException("Expected a Class, ParameterizedType or GenericArrayType");
     }
 
     static Type getParameterUpperBound(int index, ParameterizedType type) {

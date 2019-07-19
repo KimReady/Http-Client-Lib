@@ -3,6 +3,7 @@ package com.naver.httpclientsdk;
 import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.HttpClient;
 import com.naver.httpclientlib.Response;
+import com.naver.httpclientsdk.mockInterface.InvalidHttpService;
 import com.naver.httpclientsdk.mockInterface.ValidHttpService;
 import com.naver.httpclientsdk.mock.Comment;
 import com.naver.httpclientsdk.mock.Post;
@@ -22,7 +23,7 @@ import java.util.Map;
  * valid unit test for HttpClient
  */
 public class ValidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder("http://jsonplaceholder.typicode.com")
+    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
             .build();
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 
@@ -58,7 +59,7 @@ public class ValidServiceTest {
         CallTask<SkipPost> skippost = validHttpService.getPostsSkipTitleById(5);
         try {
             SkipPost result = skippost.execute().body();
-            System.out.println(result.toString());
+            Assert.assertTrue(result.getId() == 5);
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
@@ -71,7 +72,7 @@ public class ValidServiceTest {
         try {
             List<Comment> result = comments.execute().body();
             for (Comment comment : result) {
-                System.out.println(comment.toString());
+                System.out.println(comment);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,7 +82,6 @@ public class ValidServiceTest {
 
     @Test
     public void get_comments_by_postId_using_query() {
-        Integer[] postIds = new Integer[] {1, 3};
         List<Integer> postIdList = new ArrayList<>();
         postIdList.add(3);
         postIdList.add(4);
@@ -89,7 +89,7 @@ public class ValidServiceTest {
         try {
             List<Comment> result = comments.execute().body();
             for (Comment comment : result) {
-                System.out.println(comment.toString());
+                Assert.assertTrue(comment.getPostId() == 3 || comment.getPostId() == 4);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,7 +106,7 @@ public class ValidServiceTest {
             Response<List<Post>> res = posts.execute();
             List<Post> result = res.body();
             for (Post post : result) {
-                System.out.println(post.toString());
+                Assert.assertTrue(post.getUserId() == 3);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,7 +172,7 @@ public class ValidServiceTest {
         try {
             Response<Post> response = call.execute();
             Post post = response.body();
-            System.out.println(post);
+            Assert.assertEquals(post.getTitle(), "new sample title");
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
@@ -196,7 +196,7 @@ public class ValidServiceTest {
         CallTask<Post> post = validHttpService.postPostsFormUrlEncoded(111, "new title");
         try {
             Post result = post.execute().body();
-            System.out.println(result.toString());
+            Assert.assertEquals(result.getTitle(), "new title");
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
@@ -227,6 +227,21 @@ public class ValidServiceTest {
         } catch(IOException e) {
             e.printStackTrace();
             Assert.fail();
+        }
+    }
+
+    @Test
+    public void no_url_http_client_but_dynamic_url() {
+        try {
+            HttpClient client = new HttpClient.Builder().build();
+            ValidHttpService noUrlService = client.create(ValidHttpService.class);
+            CallTask<List<Post>> call = noUrlService.getPostsByDynamicURL("http://jsonplaceholder.typicode.com/posts?id=3");
+            List<Post> posts = call.execute().body();
+            for(Post post : posts) {
+                System.out.println(post);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
  * Invalid unit test for HttpClient
  */
 public class InvalidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder("http://jsonplaceholder.typicode.com")
+    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
             .build();
     InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
 
@@ -164,4 +164,5 @@ public class InvalidServiceTest {
             throw e;
         }
     }
+
 }
