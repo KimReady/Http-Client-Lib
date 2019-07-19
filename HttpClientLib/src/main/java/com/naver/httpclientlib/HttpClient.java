@@ -58,7 +58,17 @@ public final class HttpClient {
         private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
-        private long timeout;
+        private Timeout callTimeout;
+        private Timeout connectTimeout;
+        private Timeout readTimeout;
+        private Timeout writeTimeout;
+
+        public Builder() {
+            this.callTimeout = new Timeout(0, TimeUnit.MILLISECONDS);
+            this.connectTimeout = new Timeout(10000, TimeUnit.MILLISECONDS);
+            this.readTimeout = new Timeout(10000, TimeUnit.MILLISECONDS);
+            this.writeTimeout = new Timeout(10000, TimeUnit.MILLISECONDS);
+        }
 
         public Builder baseUrl(String baseUrl) {
             return baseUrl(HttpUrl.get(baseUrl));
@@ -88,8 +98,27 @@ public final class HttpClient {
             return this;
         }
 
-        public Builder timeout(long timeout) {
-            this.timeout = timeout;
+        public Builder callTimeout(long timeout, TimeUnit unit) {
+            callTimeout.timeout = timeout;
+            callTimeout.timeUnit = unit;
+            return this;
+        }
+
+        public Builder connectTimeout(long timeout, TimeUnit unit) {
+            connectTimeout.timeout = timeout;
+            connectTimeout.timeUnit = unit;
+            return this;
+        }
+
+        public Builder readTimeout(long timeout, TimeUnit unit) {
+            readTimeout.timeout = timeout;
+            readTimeout.timeUnit = unit;
+            return this;
+        }
+
+        public Builder writeTimeout(long timeout, TimeUnit unit) {
+            writeTimeout.timeout = timeout;
+            writeTimeout.timeUnit = unit;
             return this;
         }
 
@@ -98,11 +127,24 @@ public final class HttpClient {
                 // TLS -> CLEARTEXT 순으로 연결 시도하도록 설정
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
-                        .callTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .callTimeout(callTimeout.timeout, callTimeout.timeUnit)
+                        .connectTimeout(connectTimeout.timeout, connectTimeout.timeUnit)
+                        .readTimeout(readTimeout.timeout, readTimeout.timeUnit)
+                        .writeTimeout(writeTimeout.timeout, writeTimeout.timeUnit)
                         .build();
             }
 
             return new HttpClient(this);
+        }
+
+        private class Timeout {
+            long timeout;
+            TimeUnit timeUnit;
+
+            Timeout(long timeout, TimeUnit unit) {
+                this.timeout = timeout;
+                this.timeUnit = unit;
+            }
         }
     }
 }
