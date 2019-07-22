@@ -26,13 +26,13 @@ public class AsyncTest {
         CallTask<List<Post>> posts = validHttpService.getPosts();
         posts.enqueue(new CallBack() {
             @Override
-            public void onResponse(Response<?> response) {
-                System.out.println("Response!");
+            public void onResponse(Response<?> response) throws IOException{
+                System.out.println(response.body());
                 latch.countDown();
             }
 
             @Override
-            public void onFailure(Response<?> response, IOException e) {
+            public void onFailure(IOException e) {
                 System.out.println(e.getMessage());
                 latch.countDown();
             }
@@ -52,12 +52,12 @@ public class AsyncTest {
         CallBack callback = new CallBack() {
             @Override
             public void onResponse(Response<?> response) {
-                System.out.println("Response!");
+                System.out.println(response);
                 latch.countDown();
             }
 
             @Override
-            public void onFailure(Response<?> response, IOException e) {
+            public void onFailure(IOException e) {
                 System.out.println(e.getMessage());
                 latch.countDown();
             }
@@ -74,13 +74,122 @@ public class AsyncTest {
     }
 
     @Test
-    public void get_posts_fail_by_async() {
-        Class<?> clazz = int[].class;
-        System.out.println(clazz instanceof Class<?>);
+    public void get_response_by_main_thread() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CallTask<List<Post>> call = validHttpService.getPosts();
+        call.enqueue(new CallBack() {
+            @Override
+            public void onResponse(Response<?> response) throws IOException {
+                System.out.println("Received : " + Thread.currentThread().getName());
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                System.out.println("Fail, because of " + e.getMessage());
+                latch.countDown();
+            }
+        });
+
+        try {
+            Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+            System.out.println(Thread.currentThread().getName());
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
     }
 
     @Test
-    public void get_response_to_specified_thread() {
+    public void get_response_by_another_thread() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CallTask<List<Post>> call = validHttpService.getPosts();
+        Thread receiveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                call.enqueue(new CallBack() {
+                    @Override
+                    public void onResponse(Response<?> response) throws IOException {
+                        System.out.println("Received : " + Thread.currentThread().getName());
+                        latch.countDown();
+                    }
 
+                    @Override
+                    public void onFailure(IOException e) {
+                        System.out.println("Fail, because of " + e.getMessage());
+                        latch.countDown();
+                    }
+                });
+            }
+        }, "new-thread");
+
+        try {
+            receiveThread.start();
+            Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+            System.out.println(Thread.currentThread().getName());
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void duplicate_call() {
+        final CountDownLatch latch = new CountDownLatch(2);
+        CallTask<List<Post>> call = validHttpService.getPosts();
+        CallBack callBack = new CallBack() {
+            @Override
+            public void onResponse(Response<?> response) throws IOException {
+                System.out.println("async receive success.");
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                System.out.println("Fail, because it was " + e.getMessage());
+                latch.countDown();
+            }
+        };
+
+        try {
+            call.enqueue(callBack);
+            call.cancel();
+            call.enqueue(callBack);
+            Assert.assertFalse(latch.await(1000, TimeUnit.MILLISECONDS));
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void mass_call() {
+        int count = 100;
+        final CountDownLatch latch = new CountDownLatch(count);
+        for(int i = 0; i < count; i++) {
+            CallTask<List<Post>> call = validHttpService.getPosts();
+            call.enqueue(new CallBack() {
+                @Override
+                public void onResponse(Response<?> response) throws IOException {
+                    System.out.println("async receive success.");
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(IOException e) {
+                    System.out.println("Fail, because it has been " + e.getMessage());
+                    latch.countDown();
+                }
+            });
+            if(i % 10 == 0) {
+                call.cancel();
+            }
+        }
+        try {
+            Assert.assertTrue(latch.await(2000, TimeUnit.MILLISECONDS));
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
     }
 }

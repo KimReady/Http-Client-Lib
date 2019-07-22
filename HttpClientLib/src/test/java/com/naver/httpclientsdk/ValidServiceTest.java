@@ -221,10 +221,10 @@ public class ValidServiceTest {
         try {
             CallTask<List<Post>> call = validHttpService.getPostsByDynamicURL("http://jsonplaceholder.typicode.com/posts");
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
+            for (Post post : posts) {
                 System.out.println(post);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -237,10 +237,10 @@ public class ValidServiceTest {
             ValidHttpService noUrlService = client.create(ValidHttpService.class);
             CallTask<List<Post>> call = noUrlService.getPostsByDynamicURL("http://jsonplaceholder.typicode.com/posts?id=3");
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
+            for (Post post : posts) {
                 System.out.println(post);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -250,12 +250,25 @@ public class ValidServiceTest {
         try {
             CallTask<List<Post>> call = validHttpService.getPostsByDynamicURLWithQuery("http://jsonplaceholder.typicode.com/posts?pw=1", 3);
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
+            for (Post post : posts) {
                 System.out.println(post);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
+        }
+    }
+
+    @Test
+    public void mass_call() {
+        for (int i = 0; i < 10; i++) {
+            CallTask<List<Post>> posts = validHttpService.getPosts();
+            try {
+                posts.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
         }
     }
 }

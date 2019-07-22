@@ -6,9 +6,11 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.ConnectionSpec;
+import okhttp3.Dispatcher;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
@@ -58,6 +60,7 @@ public final class HttpClient {
         private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
         private Converter converter;
+        private ExecutorService executorService;
         private Timeout callTimeout;
         private Timeout connectTimeout;
         private Timeout readTimeout;
@@ -122,11 +125,18 @@ public final class HttpClient {
             return this;
         }
 
+        public Builder executorService(ExecutorService executorService) {
+            this.executorService = executorService;
+            return this;
+        }
+
         public HttpClient build() {
             if (callFactory == null) {
                 // TLS -> CLEARTEXT 순으로 연결 시도하도록 설정
+                Dispatcher dispatcher = (executorService != null) ? new Dispatcher(executorService) : new Dispatcher();
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
+                        .dispatcher(dispatcher)
                         .callTimeout(callTimeout.timeout, callTimeout.timeUnit)
                         .connectTimeout(connectTimeout.timeout, connectTimeout.timeUnit)
                         .readTimeout(readTimeout.timeout, readTimeout.timeUnit)

@@ -9,7 +9,7 @@ import okhttp3.Call;
 class RealCallTask<T> implements CallTask<T> {
     private RequestFactory requestFactory;
     private okhttp3.Call.Factory okhttpCallFactory;
-    private final okhttp3.Call okhttpCall;
+    private okhttp3.Call okhttpCall;
     private Converter converter;
     private boolean isCanceled;
 
@@ -24,34 +24,40 @@ class RealCallTask<T> implements CallTask<T> {
 
     @Override
     public Response<T> execute() throws IOException {
+        Utils.checkIsFalse(isCanceled, "the CallTask has been canceled. so you can't execute it.");
         return convertResponse(okhttpCall.execute());
     }
 
     @Override
     public void enqueue(final CallBack callback) {
+        Utils.checkIsFalse(isCanceled, "the CallTask has been canceled. so you can't execute it.");
         okhttpCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                callback.onFailure(null, e);
+                callback.onFailure(e);
             }
 
             @Override
             public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                callback.onResponse(null);
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response.toString());
+                }
+
+                callback.onResponse(convertResponse(response));
             }
         });
     }
 
     @Override
-    public void cancel() {
-        if (okhttpCall != null) {
+    public synchronized void cancel() {
+        if (okhttpCall != null && !isCanceled) {
             isCanceled = true;
             okhttpCall.cancel();
         }
     }
 
     @Override
-    public boolean isCanceled() {
+    public synchronized boolean isCanceled() {
         return isCanceled;
     }
 
