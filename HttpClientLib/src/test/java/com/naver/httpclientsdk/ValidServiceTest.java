@@ -170,12 +170,13 @@ public class ValidServiceTest {
 
     @Test
     public void put_posts_by_id() {
-        Post newPost = new Post(4, 5, "new sample title", "new sample body", 300);
+        String newTitle = "new sample title";
+        Post newPost = new Post(4, 5, newTitle, "new sample body", 300);
         CallTask<Post> call = validHttpService.putPostsById(5, newPost);
         try {
             Response<Post> response = call.execute();
             Post post = response.body();
-            Assert.assertEquals(post.getTitle(), "new sample title");
+            Assert.assertEquals(newTitle, post.getTitle());
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();
@@ -196,10 +197,11 @@ public class ValidServiceTest {
 
     @Test
     public void post_posts_by_formUrlEncoded() {
-        CallTask<Post> post = validHttpService.postPostsFormUrlEncoded(111, "new title");
+        String newTitle = "new sample title";
+        CallTask<Post> post = validHttpService.postPostsFormUrlEncoded(111, newTitle);
         try {
             Post result = post.execute().body();
-            Assert.assertEquals(result.getTitle(), "new title");
+            Assert.assertEquals(newTitle, result.getTitle());
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();

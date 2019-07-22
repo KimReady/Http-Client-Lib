@@ -1,7 +1,5 @@
 package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.converter.Converter;
-
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
@@ -86,25 +84,25 @@ public final class HttpClient {
         }
 
         public Builder callTimeout(long timeout, TimeUnit unit) {
-            callTimeout.timeout = timeout;
+            callTimeout.time = timeout;
             callTimeout.timeUnit = unit;
             return this;
         }
 
         public Builder connectTimeout(long timeout, TimeUnit unit) {
-            connectTimeout.timeout = timeout;
+            connectTimeout.time = timeout;
             connectTimeout.timeUnit = unit;
             return this;
         }
 
         public Builder readTimeout(long timeout, TimeUnit unit) {
-            readTimeout.timeout = timeout;
+            readTimeout.time = timeout;
             readTimeout.timeUnit = unit;
             return this;
         }
 
         public Builder writeTimeout(long timeout, TimeUnit unit) {
-            writeTimeout.timeout = timeout;
+            writeTimeout.time = timeout;
             writeTimeout.timeUnit = unit;
             return this;
         }
@@ -121,10 +119,10 @@ public final class HttpClient {
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
                         .dispatcher(dispatcher)
-                        .callTimeout(callTimeout.timeout, callTimeout.timeUnit)
-                        .connectTimeout(connectTimeout.timeout, connectTimeout.timeUnit)
-                        .readTimeout(readTimeout.timeout, readTimeout.timeUnit)
-                        .writeTimeout(writeTimeout.timeout, writeTimeout.timeUnit)
+                        .callTimeout(callTimeout.time, callTimeout.timeUnit)
+                        .connectTimeout(connectTimeout.time, connectTimeout.timeUnit)
+                        .readTimeout(readTimeout.time, readTimeout.timeUnit)
+                        .writeTimeout(writeTimeout.time, writeTimeout.timeUnit)
                         .build();
             }
 
@@ -132,11 +130,11 @@ public final class HttpClient {
         }
 
         private class Timeout {
-            long timeout;
+            long time;
             TimeUnit timeUnit;
 
-            Timeout(long timeout, TimeUnit unit) {
-                this.timeout = timeout;
+            Timeout(long time, TimeUnit unit) {
+                this.time = time;
                 this.timeUnit = unit;
             }
         }

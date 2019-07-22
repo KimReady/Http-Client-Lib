@@ -25,7 +25,6 @@ import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 
 class RequestFactory {
-    private final HttpClient httpClient;
     private final Annotation[] methodAnnotations;
     private final Annotation[][] parameterAnnotations;
     private ParamManager parameterManager;
@@ -46,9 +45,8 @@ class RequestFactory {
     private okhttp3.FormBody.Builder formBuilder;
     private okhttp3.RequestBody requestBody;
 
-    RequestFactory(HttpClient httpClient, Method method, Object[] args) {
-        this.httpClient = httpClient;
-        this.baseUrl = httpClient.getBaseUrl();
+    RequestFactory(HttpUrl baseUrl, Method method, Object[] args) {
+        this.baseUrl = baseUrl;
         this.methodAnnotations = method.getAnnotations();
         this.parameterAnnotations = method.getParameterAnnotations();
         this.args = args;
