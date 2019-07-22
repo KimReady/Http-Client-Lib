@@ -21,6 +21,9 @@ import okhttp3.HttpUrl;
 class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
+    static final long defaultCallTimeout = 0;
+    static final long defaultTimeout = 10000;
+
     private Utils(){}
 
     /**
