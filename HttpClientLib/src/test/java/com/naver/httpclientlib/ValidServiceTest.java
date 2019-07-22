@@ -1,20 +1,15 @@
-package com.naver.httpclientsdk;
+package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.CallTask;
-import com.naver.httpclientlib.HttpClient;
-import com.naver.httpclientlib.Response;
-import com.naver.httpclientsdk.mockInterface.InvalidHttpService;
-import com.naver.httpclientsdk.mockInterface.ValidHttpService;
-import com.naver.httpclientsdk.mock.Comment;
-import com.naver.httpclientsdk.mock.Post;
-import com.naver.httpclientsdk.mock.SkipPost;
-import com.naver.httpclientsdk.mock.User;
+import com.naver.httpclientlib.mockInterface.ValidHttpService;
+import com.naver.httpclientlib.mock.Comment;
+import com.naver.httpclientlib.mock.Post;
+import com.naver.httpclientlib.mock.SkipPost;
+import com.naver.httpclientlib.mock.User;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;

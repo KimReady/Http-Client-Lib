@@ -1,4 +1,4 @@
-package com.naver.httpclientsdk.mock;
+package com.naver.httpclientlib.mock;
 
 import com.naver.httpclientlib.annotation.SkipThis;
 

@@ -1,12 +1,8 @@
-package com.naver.httpclientsdk;
+package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.CallBack;
-import com.naver.httpclientlib.CallTask;
-import com.naver.httpclientlib.HttpClient;
-import com.naver.httpclientlib.Response;
-import com.naver.httpclientsdk.mock.Post;
-import com.naver.httpclientsdk.mockInterface.InvalidHttpService;
-import com.naver.httpclientsdk.mockInterface.ValidHttpService;
+import com.naver.httpclientlib.mock.Post;
+import com.naver.httpclientlib.mockInterface.InvalidHttpService;
+import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.naver.httpclientsdk.mock;
+package com.naver.httpclientlib.mock;
 
 public class Geo {
     double lat;
