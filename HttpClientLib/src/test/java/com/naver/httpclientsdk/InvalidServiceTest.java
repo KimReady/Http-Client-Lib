@@ -6,6 +6,7 @@ import com.naver.httpclientlib.Response;
 import com.naver.httpclientsdk.mockInterface.InvalidHttpService;
 import com.naver.httpclientsdk.mock.Comment;
 import com.naver.httpclientsdk.mock.Post;
+import com.naver.httpclientsdk.mockInterface.ValidHttpService;
 
 import org.junit.Test;
 
@@ -24,9 +25,6 @@ public class InvalidServiceTest {
     public void return_type_not_CallTask() {
         try {
             List<Post> posts = invalidHttpService.getWithIllegalReturnType();
-            for (Post post : posts) {
-                System.out.println(post.toString());
-            }
         } catch(RuntimeException e) {
             e.printStackTrace();
             throw e;
@@ -38,7 +36,6 @@ public class InvalidServiceTest {
         try {
             CallTask<Post> post = invalidHttpService.getDuplicatePathParam(5, 10);
             Post result = post.execute().body();
-            System.out.println(result.toString());
         } catch (IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -52,7 +49,6 @@ public class InvalidServiceTest {
         try {
             CallTask<Post> post = invalidHttpService.getMorePathParamThanActualParam();
             Post result = post.execute().body();
-            System.out.println(result.toString());
         } catch (IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -76,9 +72,6 @@ public class InvalidServiceTest {
         try {
             CallTask<List<Comment>> comments = invalidHttpService.getMethodIncludeRequestBody(3, "body");
             List<Comment> result = comments.execute().body();
-            for (Comment comment : result) {
-                System.out.println(comment.toString());
-            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -92,7 +85,6 @@ public class InvalidServiceTest {
         try {
             CallTask<Post> call = invalidHttpService.putPostsWithoutRequestBody(5);
             Response<Post> response = call.execute();
-            System.out.println(response.body());
         } catch (IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -106,9 +98,6 @@ public class InvalidServiceTest {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsDuplicateURL("http://jsonplaceholder.typicode.com/posts");
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
-                System.out.println(post);
-            }
         } catch(IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -122,9 +111,6 @@ public class InvalidServiceTest {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsByNullOfDynamicURL(null);
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
-                System.out.println(post);
-            }
         } catch(IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {
@@ -138,25 +124,6 @@ public class InvalidServiceTest {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsWithoutURL();
             List<Post> posts = call.execute().body();
-            for(Post post : posts) {
-                System.out.println(post);
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-        } catch(RuntimeException e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void get_posts_using_dynamic_url_with_query() {
-        try {
-            CallTask<List<Post>> call = invalidHttpService.getPostsUsingDynamicURLWithQuery("http://jsonplaceholder.typicode.com/posts", 3);
-            List<Post> posts = call.execute().body();
-            for(Post post : posts) {
-                System.out.println(post);
-            }
         } catch(IOException e) {
             e.printStackTrace();
         } catch(RuntimeException e) {

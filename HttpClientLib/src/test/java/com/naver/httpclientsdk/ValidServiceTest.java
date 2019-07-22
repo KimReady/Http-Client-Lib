@@ -14,10 +14,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * valid unit test for HttpClient
@@ -269,6 +272,88 @@ public class ValidServiceTest {
                 e.printStackTrace();
                 Assert.fail();
             }
+        }
+    }
+
+    @Test
+    public void set_read_timeout() {
+        try {
+            HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com")
+                .readTimeout(1, TimeUnit.MILLISECONDS)
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+
+        CallTask<List<Post>> posts = validHttpService.getPosts();
+            Response<List<Post>> res = posts.execute();
+            res.body();
+            Assert.fail();
+        } catch (SocketTimeoutException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void set_connect_timeout() {
+        try {
+            HttpClient httpClient = new HttpClient.Builder()
+                    .baseUrl("http://jsonplaceholder.typicode.com")
+                    .connectTimeout(1, TimeUnit.MILLISECONDS)
+                    .build();
+            ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+
+            CallTask<List<Post>> posts = validHttpService.getPosts();
+            Response<List<Post>> res = posts.execute();
+            res.body();
+            Assert.fail();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void set_call_timeout() {
+        try {
+            HttpClient httpClient = new HttpClient.Builder()
+                    .baseUrl("http://jsonplaceholder.typicode.com")
+                    .callTimeout(1, TimeUnit.MILLISECONDS)
+                    .build();
+            ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+
+            CallTask<List<Post>> posts = validHttpService.getPosts();
+            Response<List<Post>> res = posts.execute();
+            res.body();
+            Assert.fail();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void call_two_method_at_once() {
+        CallTask<List<Comment>> call1 = validHttpService.getCommentsById(3);
+        try {
+            List<Comment> comment1 = call1.execute().body();
+            System.out.println(comment1.get(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+
+        List<Integer> postIdList = new ArrayList<>();
+        postIdList.add(3);
+        postIdList.add(4);
+        CallTask<List<Comment>> call2 = validHttpService.getCommentsByPostId(postIdList);
+        try {
+            List<Comment> comment2 = call2.execute().body();
+            for (Comment comment : comment2) {
+                Assert.assertTrue(comment.getPostId() == 3 || comment.getPostId() == 4);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
         }
     }
 }

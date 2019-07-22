@@ -5,6 +5,7 @@ import com.naver.httpclientlib.CallTask;
 import com.naver.httpclientlib.HttpClient;
 import com.naver.httpclientlib.Response;
 import com.naver.httpclientsdk.mock.Post;
+import com.naver.httpclientsdk.mockInterface.InvalidHttpService;
 import com.naver.httpclientsdk.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
@@ -13,12 +14,14 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class AsyncTest {
     HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
             .build();
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+    InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
 
     @Test
     public void get_posts_success_by_async() {
@@ -26,7 +29,7 @@ public class AsyncTest {
         CallTask<List<Post>> posts = validHttpService.getPosts();
         posts.enqueue(new CallBack() {
             @Override
-            public void onResponse(Response<?> response) throws IOException{
+            public void onResponse(Response<?> response) throws IOException {
                 System.out.println(response.body());
                 latch.countDown();
             }
@@ -39,7 +42,7 @@ public class AsyncTest {
         });
         try {
             Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -67,7 +70,7 @@ public class AsyncTest {
             posts.cancel();
             Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
             Assert.assertTrue(posts.isCanceled());
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -94,7 +97,7 @@ public class AsyncTest {
         try {
             Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
             System.out.println(Thread.currentThread().getName());
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -127,7 +130,7 @@ public class AsyncTest {
             receiveThread.start();
             Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
             System.out.println(Thread.currentThread().getName());
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -156,7 +159,7 @@ public class AsyncTest {
             call.cancel();
             call.enqueue(callBack);
             Assert.assertFalse(latch.await(1000, TimeUnit.MILLISECONDS));
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
@@ -166,7 +169,7 @@ public class AsyncTest {
     public void mass_call() {
         int count = 100;
         final CountDownLatch latch = new CountDownLatch(count);
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             CallTask<List<Post>> call = validHttpService.getPosts();
             call.enqueue(new CallBack() {
                 @Override
@@ -181,13 +184,103 @@ public class AsyncTest {
                     latch.countDown();
                 }
             });
-            if(i % 10 == 0) {
+            if (i % 10 == 0) {
                 call.cancel();
             }
         }
         try {
-            Assert.assertTrue(latch.await(2000, TimeUnit.MILLISECONDS));
-        } catch(InterruptedException e) {
+            Assert.assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void duplicate_path_parameters() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        CallTask<Post> call = invalidHttpService.getDuplicatePathParam(5, 10);
+        call.enqueue(new CallBack() {
+            @Override
+            public void onResponse(Response<?> response) throws IOException {
+                System.out.println("async receive success.");
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                System.out.println("Fail, because it has been " + e.getMessage());
+                latch.countDown();
+            }
+        });
+
+        try {
+            Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void more_path_parameters_in_url_than_actual_parameters() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        CallTask<Post> call = invalidHttpService.getMorePathParamThanActualParam();
+
+        call.enqueue(new CallBack() {
+            @Override
+            public void onResponse(Response<?> response) throws IOException {
+                System.out.println("async receive success.");
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                System.out.println("Fail, because it has been " + e.getMessage());
+                latch.countDown();
+            }
+        });
+
+        try {
+            Assert.assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void set_executor_service() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com")
+                .executorService(Executors.newCachedThreadPool())
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+
+        int count = 100;
+        final CountDownLatch latch = new CountDownLatch(count);
+        for (int i = 0; i < count; i++) {
+            CallTask<List<Post>> call = validHttpService.getPosts();
+            call.enqueue(new CallBack() {
+                @Override
+                public void onResponse(Response<?> response) throws IOException {
+                    System.out.println("async receive success.");
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(IOException e) {
+                    System.out.println("Fail, because it has been " + e.getMessage());
+                    latch.countDown();
+                }
+            });
+            if (i % 10 == 0) {
+                call.cancel();
+            }
+        }
+        try {
+            Assert.assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }

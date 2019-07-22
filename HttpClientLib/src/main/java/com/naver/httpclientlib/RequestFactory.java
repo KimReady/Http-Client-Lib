@@ -13,6 +13,7 @@ import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
 import com.naver.httpclientlib.annotation.URL;
+import com.naver.httpclientlib.converter.Converter;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -91,7 +92,7 @@ class RequestFactory {
      * @return Request object
      * @throws IOException RequestBody를 Convert 하는 과정에서 발생할 수 있는 IOException
      */
-    okhttp3.Request create() throws IOException {
+    okhttp3.Request create(Converter converter) throws IOException {
         if (headers != null) {
             okRequestBuilder.headers(headers);
         }
@@ -105,7 +106,7 @@ class RequestFactory {
             if (rawRequestBody == null) {
                 throw new IllegalArgumentException("method " + httpMethod + " must have a request body.");
             }
-            requestBody = httpClient.getConverter().convertRequestBody(contentType, rawRequestBody);
+            requestBody = converter.convertRequestBody(contentType, rawRequestBody);
         }
 
         return okRequestBuilder.method(httpMethod.getName(), requestBody).build();

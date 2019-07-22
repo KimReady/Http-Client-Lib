@@ -64,7 +64,7 @@ class RealCallTask<T> implements CallTask<T> {
     private okhttp3.Call newOkhttpCall() {
         okhttp3.Call call;
         try {
-            call = okhttpCallFactory.newCall(requestFactory.create());
+            call = okhttpCallFactory.newCall(requestFactory.create(converter));
         } catch (IOException e) {
             throw new IllegalStateException("can't create Call, because of " + e.getMessage());
         }

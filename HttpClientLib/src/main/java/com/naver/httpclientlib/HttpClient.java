@@ -19,12 +19,10 @@ import static com.naver.httpclientlib.Utils.checkNotNull;
 public final class HttpClient {
     private final HttpUrl baseUrl;
     private final okhttp3.Call.Factory callFactory;
-    private Converter converter;
 
     public HttpClient(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.callFactory = builder.callFactory;
-        this.converter = builder.converter;
     }
 
     public <T> T create(Class<T> service) {
@@ -37,10 +35,6 @@ public final class HttpClient {
                 , new HttpInvocationHandler(this));
     }
 
-    public void setConverter(Converter converter) {
-        this.converter = converter;
-    }
-
     HttpUrl getBaseUrl() {
         return baseUrl;
     }
@@ -49,17 +43,12 @@ public final class HttpClient {
         return callFactory;
     }
 
-    Converter getConverter() {
-        return converter;
-    }
-
     /**
      * Builder
      */
     public static final class Builder {
         private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
-        private Converter converter;
         private ExecutorService executorService;
         private Timeout callTimeout;
         private Timeout connectTimeout;
@@ -88,11 +77,6 @@ public final class HttpClient {
         public Builder baseUrl(HttpUrl baseUrl) {
             checkNotNull(baseUrl, "base URL is null");
             this.baseUrl = baseUrl;
-            return this;
-        }
-
-        public Builder converter(Converter converter) {
-            this.converter = converter;
             return this;
         }
 
