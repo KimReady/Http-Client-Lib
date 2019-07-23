@@ -5,10 +5,10 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.ConnectionSpec;
-import okhttp3.Dispatcher;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
@@ -17,10 +17,12 @@ import static com.naver.httpclientlib.Utils.checkNotNull;
 public final class HttpClient {
     private final HttpUrl baseUrl;
     private final okhttp3.Call.Factory callFactory;
+    private final ExecutorService executorService;
 
     public HttpClient(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.callFactory = builder.callFactory;
+        this.executorService = builder.executorService;
     }
 
     public <T> T create(Class<T> service) {
@@ -39,6 +41,10 @@ public final class HttpClient {
 
     okhttp3.Call.Factory getCallFactory() {
         return callFactory;
+    }
+
+    ExecutorService getExecutorService() {
+        return executorService;
     }
 
     /**
@@ -115,15 +121,17 @@ public final class HttpClient {
         public HttpClient build() {
             if (callFactory == null) {
                 // TLS -> CLEARTEXT 순으로 연결 시도하도록 설정
-                Dispatcher dispatcher = (executorService != null) ? new Dispatcher(executorService) : new Dispatcher();
                 this.callFactory = new OkHttpClient.Builder()
                         .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
-                        .dispatcher(dispatcher)
                         .callTimeout(callTimeout.time, callTimeout.timeUnit)
                         .connectTimeout(connectTimeout.time, connectTimeout.timeUnit)
                         .readTimeout(readTimeout.time, readTimeout.timeUnit)
                         .writeTimeout(writeTimeout.time, writeTimeout.timeUnit)
                         .build();
+            }
+
+            if(executorService == null) {
+                this.executorService = Executors.newCachedThreadPool();
             }
 
             return new HttpClient(this);

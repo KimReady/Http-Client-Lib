@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * valid unit test for HttpClient
  */
 public class ValidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
+    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com/")
             .build();
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 

@@ -6,6 +6,7 @@ import com.naver.httpclientlib.converter.GsonConverterFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.concurrent.ExecutorService;
 
 import static com.naver.httpclientlib.RequestMethod.HEAD;
 
@@ -19,20 +20,22 @@ class HttpMethod<T> {
             throw new IllegalArgumentException("HEAD method must use Void as response type.");
         }
 
-        return new HttpMethod<>(httpClient.getCallFactory(), requestFactory, responseType);
+        return new HttpMethod<>(httpClient, requestFactory, responseType);
     }
 
     private okhttp3.Call.Factory callFactory;
     private RequestFactory requestFactory;
     private Converter converter;
+    private ExecutorService executorService;
 
-    private HttpMethod(okhttp3.Call.Factory callFactory, RequestFactory requestFactory, Type responseType) {
-        this.callFactory = callFactory;
+    private HttpMethod(HttpClient httpClient, RequestFactory requestFactory, Type responseType) {
+        this.callFactory = httpClient.getCallFactory();
         this.requestFactory = requestFactory;
         this.converter = GsonConverterFactory.create().converter(responseType);
+        this.executorService = httpClient.getExecutorService();
     }
 
     CallTask<T> invoke() {
-        return new RealCallTask<>(requestFactory, callFactory, converter);
+        return new RealCallTask<>(requestFactory, callFactory, converter, executorService);
     }
 }

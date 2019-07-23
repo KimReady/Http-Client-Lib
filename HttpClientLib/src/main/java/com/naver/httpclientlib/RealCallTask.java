@@ -3,21 +3,22 @@ package com.naver.httpclientlib;
 import com.naver.httpclientlib.converter.Converter;
 
 import java.io.IOException;
-
-import okhttp3.Call;
+import java.util.concurrent.ExecutorService;
 
 class RealCallTask<T> implements CallTask<T> {
     private RequestFactory requestFactory;
     private okhttp3.Call.Factory okhttpCallFactory;
     private okhttp3.Call okhttpCall;
     private Converter converter;
+    private ExecutorService executorService;
     private boolean isCanceled;
 
-    RealCallTask(RequestFactory requestFactory,
-                 okhttp3.Call.Factory okhttpCallFactory, Converter<T, ?> converter) {
+    RealCallTask(RequestFactory requestFactory, okhttp3.Call.Factory okhttpCallFactory,
+                 Converter<T, ?> converter, ExecutorService executorService) {
         this.requestFactory = requestFactory;
         this.okhttpCallFactory = okhttpCallFactory;
         this.converter = converter;
+        this.executorService = executorService;
         this.isCanceled = false;
         this.okhttpCall = newOkhttpCall();
     }
@@ -31,21 +32,18 @@ class RealCallTask<T> implements CallTask<T> {
     @Override
     public void enqueue(final CallBack callback) {
         Utils.checkIsFalse(isCanceled, "the CallTask has been canceled. so you can't execute it.");
-        okhttpCall.enqueue(new okhttp3.Callback() {
+        Runnable asyncCall = new Runnable() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response.toString());
+            public void run() {
+                try {
+                    Response<T> response = convertResponse(okhttpCall.execute());
+                    callback.onResponse(response);
+                } catch(IOException e) {
+                    callback.onFailure(e);
                 }
-
-                callback.onResponse(convertResponse(response));
             }
-        });
+        };
+        executorService.execute(asyncCall);
     }
 
     @Override
@@ -75,4 +73,5 @@ class RealCallTask<T> implements CallTask<T> {
     private Response<T> convertResponse(okhttp3.Response response) {
         return new Response<>(response, converter);
     }
+
 }

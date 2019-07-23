@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class AsyncTest {
@@ -249,7 +251,9 @@ public class AsyncTest {
     public void set_executor_service() {
         HttpClient httpClient = new HttpClient.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
-                .executorService(Executors.newCachedThreadPool())
+                .executorService(new ThreadPoolExecutor(
+                        2, Runtime.getRuntime().availableProcessors(),
+                        1000, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>()))
                 .build();
         ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 
