@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 class RealCallTask<T> implements CallTask<T> {
-    private RequestFactory requestFactory;
-    private okhttp3.Call.Factory okhttpCallFactory;
-    private okhttp3.Call okhttpCall;
-    private Converter converter;
-    private ExecutorService executorService;
+    private final RequestFactory requestFactory;
+    private final okhttp3.Call.Factory okhttpCallFactory;
+    private final okhttp3.Call okhttpCall;
+    private final Converter converter;
+    private final ExecutorService executorService;
     private boolean isCanceled;
 
     RealCallTask(RequestFactory requestFactory, okhttp3.Call.Factory okhttpCallFactory,

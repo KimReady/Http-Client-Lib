@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 public final class Response<T> {
-    private okhttp3.Response rawResponse;
-    private Converter<T, ?> converter;
+    private final okhttp3.Response rawResponse;
+    private final Converter<T, ?> converter;
 
     Response(okhttp3.Response rawResponse, Converter converter) {
         this.rawResponse = rawResponse;
@@ -27,10 +27,29 @@ public final class Response<T> {
     }
 
     public T body() throws IOException {
+        if(converter == null) {
+            return null;
+        }
         return converter.convertResponseBody(rawResponse.body());
     }
 
     public int code() {
         return rawResponse.code();
+    }
+
+    public boolean isSuccessful() {
+        return rawResponse.isSuccessful();
+    }
+
+    public boolean isRedirect() {
+        return rawResponse.isRedirect();
+    }
+
+    okhttp3.Response getRawResponse() {
+        return rawResponse;
+    }
+
+    public void close() {
+        rawResponse.close();
     }
 }

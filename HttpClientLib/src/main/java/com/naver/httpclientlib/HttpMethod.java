@@ -23,10 +23,10 @@ class HttpMethod<T> {
         return new HttpMethod<>(httpClient, requestFactory, responseType);
     }
 
-    private okhttp3.Call.Factory callFactory;
-    private RequestFactory requestFactory;
-    private Converter converter;
-    private ExecutorService executorService;
+    private final okhttp3.Call.Factory callFactory;
+    private final RequestFactory requestFactory;
+    private final Converter converter;
+    private final ExecutorService executorService;
 
     private HttpMethod(HttpClient httpClient, RequestFactory requestFactory, Type responseType) {
         this.callFactory = httpClient.getCallFactory();

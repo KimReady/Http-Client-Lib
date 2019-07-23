@@ -10,7 +10,7 @@ import com.naver.httpclientlib.annotation.SkipThis;
 
 import java.lang.reflect.Type;
 
-public class GsonConverterFactory {
+public final class GsonConverterFactory {
     private final Gson gson;
 
     public static GsonConverterFactory create() {
