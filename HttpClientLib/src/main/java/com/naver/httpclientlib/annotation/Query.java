@@ -12,5 +12,5 @@ public @interface Query {
     String value();
 
     boolean encoded() default false;
-    String encodeType() default Default.encode;
+    String encodeType() default Default.ENCODE;
 }

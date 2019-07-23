@@ -54,10 +54,10 @@ public final class HttpClient {
         private Timeout writeTimeout;
 
         public Builder() {
-            this.callTimeout = new Timeout(Utils.defaultCallTimeout, TimeUnit.MILLISECONDS);
-            this.connectTimeout = new Timeout(Utils.defaultTimeout, TimeUnit.MILLISECONDS);
-            this.readTimeout = new Timeout(Utils.defaultTimeout, TimeUnit.MILLISECONDS);
-            this.writeTimeout = new Timeout(Utils.defaultTimeout, TimeUnit.MILLISECONDS);
+            this.callTimeout = new Timeout(Utils.DEFAULT_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+            this.connectTimeout = new Timeout(Utils.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            this.readTimeout = new Timeout(Utils.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            this.writeTimeout = new Timeout(Utils.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
         public Builder baseUrl(String baseUrl) {

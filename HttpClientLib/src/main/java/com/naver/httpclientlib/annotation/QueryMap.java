@@ -12,5 +12,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface QueryMap {
     boolean encoded() default false;
-    String encodeType() default Default.encode;
+    String encodeType() default Default.ENCODE;
 }

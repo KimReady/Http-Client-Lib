@@ -21,8 +21,8 @@ import okhttp3.HttpUrl;
 class Utils {
     private static final Pattern PATH_PARAM_URL_REG = Pattern.compile("\\{[a-zA-Z][a-zA-Z0-9_-]*}");
 
-    static final long defaultCallTimeout = 0;
-    static final long defaultTimeout = 10000;
+    static final long DEFAULT_CALL_TIMEOUT = 0;
+    static final long DEFAULT_TIMEOUT = 10000;
 
     private Utils(){}
 
@@ -39,12 +39,10 @@ class Utils {
         return object;
     }
 
-    static void checkIsFalse(boolean bool, String message) {
-        if(bool) {
-            throw new IllegalStateException(message);
-        }
-    }
-
+    /**
+     * bool parameter가 True인지 검사
+     * @param message Exception 발생시 출력할 message.
+     */
     static void checkIsTrue(boolean bool, String message) {
         if(!bool) {
             throw new IllegalStateException(message);
@@ -52,7 +50,17 @@ class Utils {
     }
 
     /**
-     * method가 Http Method에 대한 Annotation을 적용 했는지 검사
+     * bool parameter가 False인지 검사
+     * @param message Exception 발생시 출력할 message.
+     */
+    static void checkIsFalse(boolean bool, String message) {
+        if(bool) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    /**
+     * service method가 Http Method에 대한 Annotation을 적용 했는지 검사
      */
     static void checkSupportedMethod(Method method) {
         if (method.getReturnType() != CallTask.class) {
