@@ -26,7 +26,7 @@ public class ValidServiceTest {
     ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 
     @Test
-    public void get_posts() {
+    public void getPosts() {
         CallTask<List<Post>> posts = validHttpService.getPosts();
         try {
             Response<List<Post>> res = posts.execute();
@@ -41,7 +41,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_by_id_using_path_param() {
+    public void getPostsByIdUsingPathParam() {
         CallTask<Post> post = validHttpService.getPostsById(5);
         try {
             Post result = post.execute().body();
@@ -53,7 +53,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_skip_title_by_id_using_path_param() {
+    public void getPostsSkipTitleByIdUsingPathParam() {
         CallTask<SkipPost> skippost = validHttpService.getPostsSkipTitleById(5);
         try {
             SkipPost result = skippost.execute().body();
@@ -65,7 +65,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_comments_by_id_using_path_param() {
+    public void getCommentsByIdUsingPathParam() {
         CallTask<List<Comment>> comments = validHttpService.getCommentsById(3);
         try {
             List<Comment> result = comments.execute().body();
@@ -79,7 +79,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_comments_by_postId_using_query() {
+    public void getCommentsByPostIdUsingQuery() {
         List<Integer> postIdList = new ArrayList<>();
         postIdList.add(3);
         postIdList.add(4);
@@ -96,7 +96,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_by_user_id_using_query_map() {
+    public void getPostsByUserIdUsingQueryMap() {
         Map<String, Integer> query = new HashMap<>();
         query.put("userId", 3);
         CallTask<List<Post>> posts = validHttpService.getPostsByUserId(query);
@@ -113,7 +113,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_method_with_header() {
+    public void getMethodWithHeader() {
         CallTask<List<Post>> posts = validHttpService.getPostsWithHeader("text/html");
         try {
             Response<List<Post>> res = posts.execute();
@@ -125,7 +125,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_method_with_headers() {
+    public void getMethodWithHeaders() {
         CallTask<List<Post>> posts = validHttpService.getPostsWithHeaders();
         try {
             Response<List<Post>> res = posts.execute();
@@ -137,7 +137,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_users_using_composite_object() {
+    public void getUsersUsingCompositeObject() {
         CallTask<List<User>> users = validHttpService.getUsers();
         try {
             Response<List<User>> res = users.execute();
@@ -152,7 +152,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void delete_posts_by_id() {
+    public void deletePostsById() {
         CallTask<Post> post = validHttpService.deletePostById(5);
         try {
             Response<Post> p = post.execute();
@@ -164,7 +164,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void put_posts_by_id() {
+    public void putPostsById() {
         String newTitle = "new sample title";
         Post newPost = new Post(4, 5, newTitle, "new sample body", 300);
         CallTask<Post> call = validHttpService.putPostsById(5, newPost);
@@ -179,7 +179,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_head_method() {
+    public void getPostsHeadMethod() {
         CallTask<Void> posts = validHttpService.getPostsForHeadMethod();
         try {
             Response<Void> res = posts.execute();
@@ -191,7 +191,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void post_posts_by_formUrlEncoded() {
+    public void postPostsByFormUrlEncoded() {
         String newTitle = "new sample title";
         CallTask<Post> post = validHttpService.postPostsFormUrlEncoded(111, newTitle);
         try {
@@ -204,7 +204,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void post_posts_by_request_body() {
+    public void postPostsByRequestBody() {
         Post newPost = new Post(111, 111, "abc", "defg", 200);
         CallTask<Post> post = validHttpService.postPosts(newPost);
         try {
@@ -217,7 +217,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_using_dynamic_url() {
+    public void getPostsUsingDynamicUrl() {
         try {
             CallTask<List<Post>> call = validHttpService.getPostsByDynamicURL("http://jsonplaceholder.typicode.com/posts");
             List<Post> posts = call.execute().body();
@@ -231,7 +231,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void no_url_http_client_but_dynamic_url() {
+    public void noUrlHttpCLientButDynamicUrl() {
         try {
             HttpClient client = new HttpClient.Builder().build();
             ValidHttpService noUrlService = client.create(ValidHttpService.class);
@@ -246,7 +246,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void get_posts_using_dynamic_url_with_query() {
+    public void getPostsUsingDynamicUrlWithQuery() {
         try {
             CallTask<List<Post>> call = validHttpService.getPostsByDynamicURLWithQuery("http://jsonplaceholder.typicode.com/posts?pw=1", 3);
             List<Post> posts = call.execute().body();
@@ -260,7 +260,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void mass_call() {
+    public void massCall() {
         for (int i = 0; i < 10; i++) {
             CallTask<List<Post>> posts = validHttpService.getPosts();
             try {
@@ -273,7 +273,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void set_read_timeout() {
+    public void setReadTimeout() {
         try {
             HttpClient httpClient = new HttpClient.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
@@ -293,7 +293,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void set_connect_timeout() {
+    public void setConnectTimeout() {
         try {
             HttpClient httpClient = new HttpClient.Builder()
                     .baseUrl("http://jsonplaceholder.typicode.com")
@@ -311,7 +311,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void set_call_timeout() {
+    public void setCallTimeout() {
         try {
             HttpClient httpClient = new HttpClient.Builder()
                     .baseUrl("http://jsonplaceholder.typicode.com")
@@ -329,7 +329,7 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void call_two_method_at_once() {
+    public void callTwoMethodAtOnce() {
         CallTask<List<Comment>> call1 = validHttpService.getCommentsById(3);
         try {
             List<Comment> comment1 = call1.execute().body();

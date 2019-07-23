@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,7 @@ public class AsyncTest {
     InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
 
     @Test
-    public void get_posts_success_by_async() {
+    public void getPostsSuccessByAsnc() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<List<Post>> posts = validHttpService.getPosts();
         posts.enqueue(new CallBack() {
@@ -47,7 +46,7 @@ public class AsyncTest {
     }
 
     @Test
-    public void get_posts_failure_by_cancel() {
+    public void getPostsFailureByCancel() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<List<Post>> posts = validHttpService.getPosts();
         CallBack callback = new CallBack() {
@@ -75,7 +74,7 @@ public class AsyncTest {
     }
 
     @Test
-    public void get_response_by_main_thread() {
+    public void getResponseByMainThread() {
         final CountDownLatch latch = new CountDownLatch(1);
         final CallTask<List<Post>> call = validHttpService.getPosts();
         call.enqueue(new CallBack() {
@@ -102,7 +101,7 @@ public class AsyncTest {
     }
 
     @Test
-    public void get_response_by_another_thread() {
+    public void getResponseByAnotherThread() {
         final CountDownLatch latch = new CountDownLatch(1);
         final CallTask<List<Post>> call = validHttpService.getPosts();
         Thread receiveThread = new Thread(new Runnable() {
@@ -135,7 +134,7 @@ public class AsyncTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void duplicate_call() {
+    public void duplicateCall() {
         final CountDownLatch latch = new CountDownLatch(2);
         CallTask<List<Post>> call = validHttpService.getPosts();
         CallBack callBack = new CallBack() {
@@ -164,7 +163,7 @@ public class AsyncTest {
     }
 
     @Test
-    public void mass_call() {
+    public void massCall() {
         int count = 100;
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
@@ -195,7 +194,7 @@ public class AsyncTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void duplicate_path_parameters() {
+    public void duplicatePathParameters() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<Post> call = invalidHttpService.getDuplicatePathParam(5, 10);
         call.enqueue(new CallBack() {
@@ -221,7 +220,7 @@ public class AsyncTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void more_path_parameters_in_url_than_actual_parameters() {
+    public void morePathParametersInUrlThanActualParameters() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<Post> call = invalidHttpService.getMorePathParamThanActualParam();
 
@@ -248,7 +247,7 @@ public class AsyncTest {
     }
 
     @Test
-    public void set_executor_service() {
+    public void setExecutorService() {
         HttpClient httpClient = new HttpClient.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
                 .executorService(new ThreadPoolExecutor(

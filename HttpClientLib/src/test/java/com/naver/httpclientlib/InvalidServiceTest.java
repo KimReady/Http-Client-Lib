@@ -18,7 +18,7 @@ public class InvalidServiceTest {
     InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
 
     @Test(expected = RuntimeException.class)
-    public void return_type_not_CallTask() {
+    public void returnTypeNotCallTask() {
         try {
             List<Post> posts = invalidHttpService.getWithIllegalReturnType();
         } catch(RuntimeException e) {
@@ -28,7 +28,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void duplicate_path_parameters() {
+    public void duplicatePathParameters() {
         try {
             CallTask<Post> post = invalidHttpService.getDuplicatePathParam(5, 10);
             Post result = post.execute().body();
@@ -41,7 +41,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void more_path_parameters_in_url_than_actual_parameters() {
+    public void morePathParametersInUrlThanActualParameters() {
         try {
             CallTask<Post> post = invalidHttpService.getMorePathParamThanActualParam();
             Post result = post.execute().body();
@@ -54,7 +54,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void more_actual_path_parameters_than_url_path_parameters() {
+    public void moreActualPathParametersThanUrlPathParameters() {
         try {
             CallTask<Post> post = invalidHttpService.getMoreActualPathParamThanUrl(5, "title test");
         } catch(RuntimeException e) {
@@ -64,7 +64,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_method_include_request_body() {
+    public void getMethodIncludeRequestBody() {
         try {
             CallTask<List<Comment>> comments = invalidHttpService.getMethodIncludeRequestBody(3, "body");
             List<Comment> result = comments.execute().body();
@@ -77,7 +77,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void put_without_request_body() {
+    public void putWithoutRequestBody() {
         try {
             CallTask<Post> call = invalidHttpService.putPostsWithoutRequestBody(5);
             Response<Post> response = call.execute();
@@ -90,7 +90,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_posts_duplicate_url() {
+    public void getPostsDuplicateUrl() {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsDuplicateURL("http://jsonplaceholder.typicode.com/posts");
             List<Post> posts = call.execute().body();
@@ -103,7 +103,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_posts_by_null_of_dynamic_url() {
+    public void getPostsByNullOfDynamicUrl() {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsByNullOfDynamicURL(null);
             List<Post> posts = call.execute().body();
@@ -116,7 +116,7 @@ public class InvalidServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void get_posts_without_url() {
+    public void getPostsWithoutUrl() {
         try {
             CallTask<List<Post>> call = invalidHttpService.getPostsWithoutURL();
             List<Post> posts = call.execute().body();
