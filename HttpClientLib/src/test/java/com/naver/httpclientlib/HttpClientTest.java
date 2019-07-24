@@ -1,5 +1,7 @@
 package com.naver.httpclientlib;
 
+import com.google.gson.GsonBuilder;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -152,5 +154,19 @@ public class HttpClientTest {
                 .networkInterceptor(interceptor)
                 .build();
         assertNotNull(((OkHttpClient) httpClient.getCallFactory()).networkInterceptors().get(0));
+    }
+
+    @Test
+    public void createWithGsonBuilder() {
+        String baseUrl = "http://jsonplaceholder.typicode.com/";
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .setLenient()
+                .disableHtmlEscaping()
+                .serializeNulls();
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl(baseUrl)
+                .gsonBuilder(gsonBuilder)
+                .build();
+        assertEquals(gsonBuilder, httpClient.gsonBuilder());
     }
 }

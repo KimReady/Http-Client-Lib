@@ -1,18 +1,18 @@
 package com.naver.httpclientlib.mock;
 
-import com.naver.httpclientlib.annotation.SkipThis;
+import com.google.gson.annotations.SerializedName;
 
 public class SkipPost {
     int userId;
     int id;
-    @SkipThis
-    String title;
+    @SerializedName(value="title")
+    String titles;
     String body;
 
-    public SkipPost(int userId, int id, String title, String body) {
+    public SkipPost(int userId, int id, String titles, String body) {
         this.userId = userId;
         this.id = id;
-        this.title = title;
+        this.titles = titles;
         this.body = body;
     }
 
@@ -33,11 +33,11 @@ public class SkipPost {
     }
 
     public String getTitle() {
-        return title;
+        return titles;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.titles = title;
     }
 
     public String getBody() {
@@ -53,7 +53,7 @@ public class SkipPost {
         return "SkipPost{" +
                 "userId=" + userId +
                 ", id=" + id +
-                ", title='" + title + '\'' +
+                ", title='" + titles + '\'' +
                 ", body='" + body + '\'' +
                 '}';
     }

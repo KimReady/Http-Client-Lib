@@ -1,5 +1,7 @@
 package com.naver.httpclientlib;
 
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -20,11 +22,13 @@ public final class HttpClient {
     private final HttpUrl baseUrl;
     private final okhttp3.Call.Factory callFactory;
     private final ExecutorService executorService;
+    private final GsonBuilder gsonBuilder;
 
     public HttpClient(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.callFactory = builder.callFactory;
         this.executorService = builder.executorService;
+        this.gsonBuilder = builder.gsonBuilder;
     }
 
     public <T> T create(Class<T> service) {
@@ -49,12 +53,17 @@ public final class HttpClient {
         return executorService;
     }
 
+    GsonBuilder gsonBuilder() {
+        return gsonBuilder;
+    }
+
     /**
      * Builder
      */
     public static final class Builder {
         private HttpUrl baseUrl;
         private okhttp3.Call.Factory callFactory;
+        private GsonBuilder gsonBuilder;
         private ExecutorService executorService;
         private okhttp3.Interceptor applicationInterceptor;
         private okhttp3.Interceptor networkInterceptor;
@@ -90,6 +99,11 @@ public final class HttpClient {
 
         Builder callFactory(okhttp3.Call.Factory callFactory) {
             this.callFactory = callFactory;
+            return this;
+        }
+
+        Builder gsonBuilder(GsonBuilder gsonBuilder) {
+            this.gsonBuilder = gsonBuilder;
             return this;
         }
 
@@ -145,6 +159,10 @@ public final class HttpClient {
         }
 
         public HttpClient build() {
+            if(gsonBuilder == null) {
+                gsonBuilder = new GsonBuilder();
+            }
+
             if (callFactory == null) {
                 // TLS -> CLEARTEXT 순으로 연결 시도하도록 설정
                 OkHttpClient.Builder callBuilder = new OkHttpClient.Builder()

@@ -53,10 +53,15 @@ public class ValidServiceTest {
     }
 
     @Test
-    public void getPostsSkipTitleByIdUsingPathParam() {
+    public void getPostsForSeriallizedNameTitleByIdUsingPathParam() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
         CallTask<SkipPost> skippost = validHttpService.getPostsSkipTitleById(5);
         try {
             SkipPost result = skippost.execute().body();
+            System.out.println(result);
             Assert.assertTrue(result.getId() == 5);
         } catch (IOException e) {
             e.printStackTrace();
