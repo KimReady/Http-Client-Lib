@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class InterceptorChain {
     okhttp3.Interceptor.Chain chain;
     okhttp3.Request.Builder requestBuilder;
+    okhttp3.Request request;
     okhttp3.Response rawResponse;
 
     InterceptorChain(okhttp3.Interceptor.Chain chain) {
@@ -63,8 +64,8 @@ public class InterceptorChain {
     }
 
     public Response proceed() throws IOException {
-        rawResponse = chain.proceed(requestBuilder.build());
+        request = requestBuilder.build();
+        rawResponse = chain.proceed(request);
         return new Response<>(rawResponse, null);
     }
-
 }

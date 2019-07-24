@@ -458,4 +458,80 @@ public class InterceptorTest {
         }
     }
 
+    @Test
+    public void networkInterceptorChangeRequestHeader() {
+        Interceptor interceptor = new Interceptor() {
+            @Override
+            public Response intercept(InterceptorChain chain) throws IOException {
+                chain.setRequestHeader("Content-Encoding", "EU-KR");
+                Response response = chain.proceed();
+                assertTrue(response.isSuccessful());
+                assertEquals("EU-KR", chain.request.header("Content-Encoding"));
+                return response;
+            }
+        };
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .networkInterceptor(interceptor)
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+        try {
+            validHttpService.getPosts().execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void applicationInterceptorChangeRequestHeader() {
+        Interceptor interceptor = new Interceptor() {
+            @Override
+            public Response intercept(InterceptorChain chain) throws IOException {
+                chain.addRequestHeader("User-Agent", "ReadyKim");
+                Response response = chain.proceed();
+                assertTrue(response.isSuccessful());
+                assertEquals("ReadyKim", chain.request.header("User-Agent"));
+                return response;
+            }
+        };
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .applicationInterceptor(interceptor)
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+        try {
+            validHttpService.getPosts().execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void applicationInterceptorRemoveRequestHeader() {
+        Interceptor interceptor = new Interceptor() {
+            @Override
+            public Response intercept(InterceptorChain chain) throws IOException {
+                chain.addRequestHeader("User-Agent", "ReadyKim");
+                chain.removeRequestHeader("User-Agent");
+                Response response = chain.proceed();
+                assertTrue(response.isSuccessful());
+                assertNull(chain.request.header("User-Agent"));
+                return response;
+            }
+        };
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .applicationInterceptor(interceptor)
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+        try {
+            validHttpService.getPosts().execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
 }
