@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import static com.naver.httpclientlib.RequestMethod.HEAD;
 
 class HttpMethod<T> {
-    static HttpMethod create(HttpClient httpClient, Method method, Object[] args) {
+    static HttpMethod of(HttpClient httpClient, Method method, Object[] args) {
         RequestFactory requestFactory = new RequestFactory(httpClient.getBaseUrl(), method, args).initialize();
 
         Type returnType = method.getGenericReturnType();

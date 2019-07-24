@@ -20,6 +20,6 @@ class HttpInvocationHandler implements InvocationHandler {
 
         Utils.checkSupportedMethod(method);
 
-        return HttpMethod.create(httpClient, method, objects).invoke();
+        return HttpMethod.of(httpClient, method, objects).invoke();
     }
 }

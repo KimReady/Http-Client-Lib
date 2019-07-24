@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-public class InterceptorChain {
+public final class InterceptorChain {
     okhttp3.Interceptor.Chain chain;
     okhttp3.Request.Builder requestBuilder;
     okhttp3.Request request;

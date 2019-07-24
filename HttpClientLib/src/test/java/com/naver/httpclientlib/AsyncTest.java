@@ -248,15 +248,15 @@ public class AsyncTest {
 
     @Test
     public void setExecutorService() {
+        int count = 100;
         HttpClient httpClient = new HttpClient.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
                 .executorService(new ThreadPoolExecutor(
-                        2, Runtime.getRuntime().availableProcessors(),
-                        1000, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>()))
+                        0, count,
+                        60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()))
                 .build();
         ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
 
-        int count = 100;
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             CallTask<List<Post>> call = validHttpService.getPosts();

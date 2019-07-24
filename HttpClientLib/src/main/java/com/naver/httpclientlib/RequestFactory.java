@@ -186,12 +186,11 @@ class RequestFactory {
         return headerBuilder.build();
     }
 
-    String replacePathParameters(String relUrl) {
+    private String replacePathParameters(String relUrl) {
         return parameterManager.replacePathParameters(relUrl);
     }
 
     private void parseParameterManager(Annotation annotation, Object arg) {
-
         if (annotation instanceof Header || annotation instanceof HeaderMap) {
             parameterManager.addHeader(annotation, arg);
         } else if (annotation instanceof PathParam) {
