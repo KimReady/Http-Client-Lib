@@ -44,7 +44,7 @@ class ParamManager {
             pathParams.remove(paramName);
         }
         if(!pathParams.isEmpty()) {
-            throw new IllegalArgumentException("there is(are) unmatched path parameter(s).");
+            throw new IllegalArgumentException("there are too many actual path parameters.");
         }
         return relUrl;
     }
@@ -174,5 +174,9 @@ class ParamManager {
 
     Object getRawRequestBody() {
         return rawRequestBody;
+    }
+
+    Map<String, List<String>> queriesParam() {
+        return queriesParam;
     }
 }
