@@ -13,7 +13,6 @@ import com.naver.httpclientlib.annotation.QueryMap;
 import com.naver.httpclientlib.annotation.RequestBody;
 import com.naver.httpclientlib.annotation.RequestMapping;
 import com.naver.httpclientlib.annotation.URL;
-import com.naver.httpclientlib.converter.Converter;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

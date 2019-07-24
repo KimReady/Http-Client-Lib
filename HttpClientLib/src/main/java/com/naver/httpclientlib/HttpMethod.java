@@ -1,8 +1,5 @@
 package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.converter.Converter;
-import com.naver.httpclientlib.converter.GsonConverterFactory;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

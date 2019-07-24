@@ -1,4 +1,4 @@
-package com.naver.httpclientlib.converter;
+package com.naver.httpclientlib;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -14,7 +14,7 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
 
-public final class GsonConverter<ReturnType, RequestType> implements Converter<ReturnType, RequestType> {
+final class GsonConverter<ReturnType, RequestType> implements Converter<ReturnType, RequestType> {
     private TypeAdapter<RequestType> requestAdapter;
     private TypeAdapter<ReturnType> responseAdapter;
     private Buffer buffer;

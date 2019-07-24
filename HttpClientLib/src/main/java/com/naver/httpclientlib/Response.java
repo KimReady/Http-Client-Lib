@@ -1,7 +1,5 @@
 package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.converter.Converter;
-
 import java.io.IOException;
 import java.util.List;
 

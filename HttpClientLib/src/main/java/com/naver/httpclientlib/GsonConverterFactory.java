@@ -1,4 +1,4 @@
-package com.naver.httpclientlib.converter;
+package com.naver.httpclientlib;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
-public final class GsonConverterFactory {
+final class GsonConverterFactory {
     private final Gson gson;
 
     public static GsonConverterFactory create(GsonBuilder gsonBuilder) {
