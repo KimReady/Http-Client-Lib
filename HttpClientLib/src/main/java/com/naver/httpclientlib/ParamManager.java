@@ -156,7 +156,6 @@ class ParamManager {
         queryParams.put(key, String.valueOf(value));
     }
 
-
     void addQueriesParam(String key, String value) {
         if(!queriesParam.containsKey(key)) {
             List<String> values = new ArrayList<>();

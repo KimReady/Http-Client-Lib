@@ -80,20 +80,20 @@ public final class HttpClient {
         }
 
         public Builder baseUrl(String baseUrl) {
-            return baseUrl(HttpUrl.get(baseUrl));
+            return setBaseUrl(baseUrl);
         }
 
         public Builder baseUrl(URL baseUrl) {
-            return baseUrl(HttpUrl.get(baseUrl));
+            return setBaseUrl(baseUrl);
         }
 
         public Builder baseUrl(URI baseUrl) {
-            return baseUrl(HttpUrl.get(baseUrl));
+            return setBaseUrl(baseUrl);
         }
 
-        Builder baseUrl(HttpUrl baseUrl) {
+        Builder setBaseUrl(Object baseUrl) {
             checkNotNull(baseUrl, "base URL is null");
-            this.baseUrl = baseUrl;
+            this.baseUrl = Utils.getHttpUrl(baseUrl);
             return this;
         }
 
