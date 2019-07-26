@@ -1,12 +1,24 @@
 apply plugin: 'java-library'
-
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-
-    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
-    api 'com.google.code.gson:gson:2.8.5'
-}
+apply plugin: 'maven-publish'
 
 sourceCompatibility = "7"
 targetCompatibility = "7"
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    api 'com.google.code.gson:gson:2.8.5'
+}
+
+publishing {
+    publications {
+        httpclientlib(MavenPublication) {
+            groupId = 'com.naver.httpclientlib'
+            artifactId = 'http-client-lib'
+            version = '0.1.0-SNAPSHOT'
+
+            from components.java
+        }
+    }
+}
