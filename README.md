@@ -1,10 +1,10 @@
-Http Client SDK
+Http Client Library
 =====
 
-Http Client SDK(이하 HCS)는 okhttp3와 gson을 활용한 Http 통신 라이브러리입니다.  
+Http Client Library(이하 HCL)는 okhttp3와 gson을 활용한 Http 통신 라이브러리입니다.  
 **Java 7, Android SdkVersion 16 버전**부터 지원합니다.  
 
-HCS는 다음을 지원합니다.
+HCL은 다음을 지원합니다.
 * Annotation을 통한 Custom Service Interface 제공.
     * GET, POST, PUT, DELETE, HEAD의 모든 http method 지원.
     * Query, Path Parameter 지원.
