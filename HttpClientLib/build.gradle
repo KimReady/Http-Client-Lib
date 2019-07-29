@@ -1,5 +1,64 @@
 apply plugin: 'java-library'
+apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def artifact = new Properties()
+artifact.load(new FileInputStream(file("deploy.settings")))
+
+version = artifact.version
+group = artifact.groupId
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'jar'
+            groupId artifact.groupId
+            artifactId = artifact.id
+            version artifact.version
+            name artifact.id
+            description 'A library for Http communication.'
+            url artifact.siteUrl
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    name 'junbi-kim'
+                }
+            }
+        }
+    }
+}
+
+Properties properties = new Properties()
+properties.load(new FileInputStream(file('local.properties')))
+bintray {
+    user = properties.getProperty('BINTRAY_USERNAME')
+    key = properties.getProperty('BINTRAY_API_KEY')
+
+    configurations = ['archives']
+    pkg {
+        repo = properties.getProperty('BINTRAY_REPONAME')
+        name = properties.getProperty('BINTRAY_PKG')
+        userOrg = properties.getProperty('BINTRAY_ORG')
+        vcsUrl = 'https://oss.navercorp.com/da-intern-2019-1h/http-client-sdk.git'
+        licenses = ["Apache-2.0"]
+
+        version {
+            name = artifact.version
+            released  = new Date()
+        }
+    }
+    publish = true
+
+}
 
 sourceCompatibility = "7"
 targetCompatibility = "7"
@@ -11,14 +70,11 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.5'
 }
 
-publishing {
-    publications {
-        httpclientlib(MavenPublication) {
-            groupId = 'com.naver.httpclientlib'
-            artifactId = 'http-client-lib'
-            version = '0.1.0-SNAPSHOT'
+task sourcesJar(type: Jar) {
+    from sourceSets.main.output.classesDirs
+    classifier = 'sources'
+}
 
-            from components.java
-        }
-    }
+artifacts {
+    archives sourcesJar
 }
