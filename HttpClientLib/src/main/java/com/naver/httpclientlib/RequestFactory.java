@@ -199,6 +199,7 @@ class RequestFactory {
         } else if (annotation instanceof Query || annotation instanceof Queries || annotation instanceof QueryMap) {
             parameterManager.addQuery(annotation, arg);
         } else if (annotation instanceof Field || annotation instanceof FieldMap) {
+            Utils.checkIsTrue(hasBody, httpMethod.getName() + " method cannot have a request body.");
             Utils.checkIsTrue(isFormEncoded, "'@Field' needs a '@FormUrlEncoded' on your method.");
             parameterManager.addField(annotation, arg, formBuilder);
         } else if (annotation instanceof RequestBody) {
