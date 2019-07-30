@@ -189,6 +189,7 @@ public class ValidServiceTest {
         try {
             Response<Void> res = posts.execute();
             System.out.println(res.header("content-type"));
+            System.out.println(res.body());
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();

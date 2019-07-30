@@ -28,7 +28,9 @@ class HttpMethod<T> {
     private HttpMethod(HttpClient httpClient, RequestFactory requestFactory, Type responseType) {
         this.callFactory = httpClient.getCallFactory();
         this.requestFactory = requestFactory;
-        this.converter = GsonConverterFactory.create(httpClient.gsonBuilder()).converter(responseType);
+        this.converter = requestFactory.httpMethod() != RequestMethod.HEAD ?
+                GsonConverterFactory.create(httpClient.gsonBuilder()).converter(responseType)
+                : null;
         this.executorService = httpClient.getExecutorService();
     }
 
