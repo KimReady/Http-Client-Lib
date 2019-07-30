@@ -113,6 +113,30 @@ public class InterceptorTest {
     }
 
     @Test
+    public void applicationInterceptorCannotChangeServerAddress() {
+        Interceptor interceptor = new Interceptor() {
+            @Override
+            public Response intercept(InterceptorChain chain) throws IOException {
+                chain.setRequestUrl("https://www.naver.com/");
+                return chain.proceed();
+            }
+        };
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .applicationInterceptor(interceptor)
+                .build();
+        ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+        try {
+            validHttpService.getPosts().execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IllegalStateException expected) {
+            System.out.println(expected.getMessage());
+        }
+    }
+
+    @Test
     public void networkInterceptorCanReadHeader() {
         final String contentType = "application/json; charset=utf-8";
         Interceptor interceptor = new Interceptor() {
