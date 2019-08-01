@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">HttpClientLib-demo</string>
+
+    <!-- used in fragment_main.xml -->
+    <string name="base_url_timeout">Base URL and Timeout</string>
+    <string name="setting">Setting</string>
+    <string name="response_item">Response Item</string>
+    <string name="method_item">Http Method</string>
+    <string name="query">Query</string>
+    <string name="add">Add</string>
+    <string name="sync_async">Sync/Async</string>
+    <string name="sync">Sync</string>
+    <string name="async">Async</string>
+    <string name="call">CALL</string>
+    <string name="dynamic_call">Dynamic CALL</string>
+
+    <string-array name="response_item_list">
+        <item>Post</item>
+        <item>Comment</item>
+        <item>User</item>
+    </string-array>
+
+    <string-array name="http_method_list">
+        <item>GET</item>
+        <item>POST</item>
+        <item>PUT</item>
+        <item>DELETE</item>
+        <item>HEAD</item>
+    </string-array>
+
+    <!-- used in fragment_httpclient_config.xml -->
+    <string-array name="time_unit_list">
+        <item>SECONDS</item>
+        <item>MILLI_SECONDS</item>
+        <item>NANO_SECONDS</item>
+    </string-array>
+
+    <string name="save">Save</string>
+    <string name="base_url">Base URL</string>
+    <string name="default_URL">http://jsonplaceholder.typicode.com</string>
+    <string name="base_URL_hint">ex) http://jsonplaceholder.typicode.com</string>
+
+    <string name="timeout">Timeout(Milli Seconds)</string>
+    <string name="call_timeout">Call Timeout</string>
+    <string name="connect_timeout">Connect Timeout</string>
+    <string name="read_timeout">Read Timeout</string>
+    <string name="write_timeout">Write Timeout</string>
+    <string name="timeout_hint">ex) 10000</string>
+
+    <!-- used in fragment_log.xml -->
+    <string name="request_log">Request Log</string>
+    <string name="response_log">Response Log</string>
+</resources>

@@ -25,7 +25,7 @@ HCL은 다음을 지원합니다.
 Dependency 추가
 -----
 ### Gradle
-당신의 프로젝트에서 루트 수준의 build.gradle에 Maven URL을 추가해주세요.
+프로젝트에서 루트 수준의 build.gradle에 Maven URL을 추가해주세요.
 
 ```groovy
 allprojects {

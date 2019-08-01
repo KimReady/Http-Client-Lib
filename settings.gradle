@@ -1,1 +1,1 @@
-include ':app', ':HttpClientLib'
+include ':HttpClientLib-demo', ':HttpClientLib'
