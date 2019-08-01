@@ -186,10 +186,20 @@ class RequestFactory {
         return headerBuilder.build();
     }
 
+    /**
+     * replace path parameter in relative url to value of actual parameter.
+     * @param relUrl relative url that contains path parameters before replacing.
+     * @return replaced url
+     */
     private String replacePathParameters(String relUrl) {
         return parameterManager.replacePathParameters(relUrl);
     }
 
+    /**
+     * parse paramter and store to ParameterManager object.
+     * @param annotation parameter's annotation
+     * @param arg actual parameter
+     */
     private void parseParameterManager(Annotation annotation, Object arg) {
         if (annotation instanceof Header || annotation instanceof HeaderMap) {
             parameterManager.addHeader(annotation, arg);
@@ -204,6 +214,7 @@ class RequestFactory {
             parameterManager.addField(annotation, arg, formBuilder);
         } else if (annotation instanceof RequestBody) {
             Utils.checkIsTrue(hasBody, httpMethod.getName() + " method cannot have a request body.");
+            Utils.checkIsFalse(isFormEncoded, "'@RequestBody' can't be used with '@FormUrlEncoded'.");
             parameterManager.setRawRequestBody(arg);
         } else if (annotation instanceof URL) {
             boolean isUrl = (arg instanceof String || arg instanceof java.net.URL

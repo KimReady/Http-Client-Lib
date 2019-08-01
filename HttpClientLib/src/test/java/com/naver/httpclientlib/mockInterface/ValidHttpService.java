@@ -42,6 +42,9 @@ public interface ValidHttpService {
     CallTask<List<Post>> getPostsByUserId(@QueryMap Map<String, Integer> userId);
 
     @RequestMapping(value="/posts", method=RequestMethod.GET)
+    CallTask<List<Post>> getPostsByUserId(@Query("userId") Integer userId);
+
+    @RequestMapping(value="/posts", method=RequestMethod.GET)
     CallTask<List<Post>> getPostsWithHeader(@Header("content-type") String contentType);
 
     @Headers({"content-type:text/html"})

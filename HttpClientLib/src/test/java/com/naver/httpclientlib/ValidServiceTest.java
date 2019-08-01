@@ -101,6 +101,20 @@ public class ValidServiceTest {
     }
 
     @Test
+    public void getPostByUserIdUsingQuery() {
+        CallTask<List<Post>> call = validHttpService.getPostsByUserId(3);
+        try {
+            List<Post> posts = call.execute().body();
+            for (Post post : posts) {
+                Assert.assertTrue(post.getUserId() == 3);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void getPostsByUserIdUsingQueryMap() {
         Map<String, Integer> query = new HashMap<>();
         query.put("userId", 3);

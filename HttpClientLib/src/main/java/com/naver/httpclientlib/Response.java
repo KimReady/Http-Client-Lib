@@ -6,10 +6,16 @@ import java.util.List;
 public final class Response<T> {
     private final okhttp3.Response rawResponse;
     private final Converter<T, ?> converter;
+    private final Request request;
 
     Response(okhttp3.Response rawResponse, Converter converter) {
         this.rawResponse = rawResponse;
         this.converter = converter;
+        this.request = new Request(rawResponse.request());
+    }
+
+    public Request request() {
+        return request;
     }
 
     public String header(String name) {
