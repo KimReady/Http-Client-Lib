@@ -1,5 +1,6 @@
 package com.naver.httpclientlib;
 
+import com.google.gson.stream.MalformedJsonException;
 import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
@@ -128,7 +129,9 @@ public class InterceptorTest {
         ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
         try {
             validHttpService.getPosts().execute();
-        } catch (IOException e) {
+        } catch(MalformedJsonException e) {
+            e.printStackTrace();
+        } catch(IOException e) {
             e.printStackTrace();
             fail();
         } catch (IllegalStateException expected) {

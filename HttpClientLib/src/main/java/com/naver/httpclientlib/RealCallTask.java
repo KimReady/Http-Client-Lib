@@ -7,7 +7,7 @@ class RealCallTask<T> implements CallTask<T> {
     private final RequestFactory requestFactory;
     private final okhttp3.Call.Factory okhttpCallFactory;
     private final okhttp3.Call okhttpCall;
-    private final Converter converter;
+    private final Converter<T, ?> converter;
     private final ExecutorService executorService;
     private boolean isCanceled;
 
@@ -68,7 +68,7 @@ class RealCallTask<T> implements CallTask<T> {
         return call;
     }
 
-    private Response<T> convertResponse(okhttp3.Response response) {
+    private Response<T> convertResponse(okhttp3.Response response) throws IOException {
         return new Response<>(response, converter);
     }
 

@@ -1,7 +1,5 @@
 package com.naver.httpclientlib;
 
-import java.util.Map;
-
 public class Request {
     final String url;
     final String method;
@@ -12,7 +10,9 @@ public class Request {
         url = request.url().toString();
         method = request.method();
         headers = request.headers().toString();
-        contentType = request.body().contentType().toString();
+        contentType = (request.body() != null && request.body().contentType() != null) ?
+                request.body().contentType().toString()
+                : null;
     }
 
     public String getUrl() {
@@ -25,5 +25,9 @@ public class Request {
 
     public String getHeaders() {
         return headers;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 }

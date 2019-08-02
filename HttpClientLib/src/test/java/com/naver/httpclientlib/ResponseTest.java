@@ -1,5 +1,6 @@
 package com.naver.httpclientlib;
 
+import com.google.gson.stream.MalformedJsonException;
 import com.naver.httpclientlib.mock.Post;
 import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
@@ -102,7 +103,9 @@ public class ResponseTest {
             Response res = call.execute();
             assertEquals(200, res.code());
             assertFalse(res.isRedirect());
-        } catch (IOException e) {
+        } catch(MalformedJsonException e ) {
+            e.printStackTrace();
+        } catch(IOException e) {
             e.printStackTrace();
             Assert.fail();
         }

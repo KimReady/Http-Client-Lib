@@ -5,13 +5,13 @@ import java.util.List;
 
 public final class Response<T> {
     private final okhttp3.Response rawResponse;
-    private final Converter<T, ?> converter;
     private final Request request;
+    private final T body;
 
-    Response(okhttp3.Response rawResponse, Converter converter) {
+    Response(okhttp3.Response rawResponse, Converter<T, ?> converter) throws IOException {
         this.rawResponse = rawResponse;
-        this.converter = converter;
         this.request = new Request(rawResponse.request());
+        body = converter != null ? converter.convertResponseBody(rawResponse.body()) : null;
     }
 
     public Request request() {
@@ -30,11 +30,8 @@ public final class Response<T> {
         return rawResponse.headers(name);
     }
 
-    public T body() throws IOException {
-        if(converter == null) {
-            return null;
-        }
-        return converter.convertResponseBody(rawResponse.body());
+    public T body() {
+        return body;
     }
 
     public int code() {
