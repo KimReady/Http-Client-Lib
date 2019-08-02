@@ -5,6 +5,7 @@
     <string name="base_url_timeout">Base URL and Timeout</string>
     <string name="setting">Setting</string>
     <string name="method_item">Http Method</string>
+    <string name="path_param">Path Parameter</string>
     <string name="query">Query</string>
     <string name="add">Add</string>
     <string name="request_body">Request Body</string>
@@ -16,6 +17,11 @@
     <string name="dynamic_call">Dynamic CALL</string>
     <string name="name">name</string>
     <string name="value">value</string>
+
+    <string name="user_id">User ID</string>
+    <string name="id">ID</string>
+    <string name="title">Title</string>
+    <string name="body">Body</string>
 
     <string-array name="http_method_list">
         <item>GET</item>

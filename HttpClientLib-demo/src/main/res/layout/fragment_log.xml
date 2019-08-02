@@ -3,17 +3,31 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:text="@string/request_log"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:layout_weight="1"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/request_log"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"/>
+
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back_btn"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
     <EditText
+        android:id="@+id/request_log"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:inputType="none"
@@ -22,7 +36,7 @@
         android:maxLines="12"
         android:scrollbars="vertical"
         android:focusable="false"
-        android:layout_weight="5"/>
+        android:layout_weight="3"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,6 +49,7 @@
         android:layout_weight="1"/>
 
     <EditText
+        android:id="@+id/response_log"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:inputType="none"

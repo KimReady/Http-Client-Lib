@@ -50,27 +50,27 @@ public class HttpClientConfigFragment extends Fragment {
 
         callTimeoutText = view.findViewById(R.id.call_time);
         callTimeoutText.setText(String.valueOf(
-                sharedPreferences.getInt(
+                sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.call_timeout),
-                        10000)));
+                        DefaultTimeout.callTimeout)));
 
         connectTimeoutText = view.findViewById(R.id.connect_time);
         connectTimeoutText.setText(String.valueOf(
-                sharedPreferences.getInt(
+                sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.connect_timeout),
-                        10000)));
+                        DefaultTimeout.connectTimeout)));
 
         readTimeoutText = view.findViewById(R.id.read_time);
         readTimeoutText.setText(String.valueOf(
-                sharedPreferences.getInt(
+                sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.read_timeout),
-                        10000)));
+                        DefaultTimeout.readTimeout)));
 
         writeTimeoutText = view.findViewById(R.id.write_time);
         writeTimeoutText.setText(String.valueOf(
-                sharedPreferences.getInt(
+                sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.write_timeout),
-                        10000)));
+                        DefaultTimeout.writeTimeout)));
 
         Button saveBtn = view.findViewById(R.id.save_btn);
         saveBtn.setOnClickListener(new Button.OnClickListener(){
@@ -87,29 +87,29 @@ public class HttpClientConfigFragment extends Fragment {
 
                 CharSequence callSeq = callTimeoutText.getText();
                 if(callSeq.length() > 0) {
-                    editor.putInt(
+                    editor.putLong(
                             getContext().getResources().getString(R.string.call_timeout),
-                            Integer.valueOf(callSeq.toString()));
+                            Long.valueOf(callSeq.toString()));
                 }
 
                 CharSequence connectSeq = connectTimeoutText.getText();
                 if(connectSeq.length() > 0) {
-                    editor.putInt(
+                    editor.putLong(
                             getContext().getResources().getString(R.string.connect_timeout),
-                            Integer.valueOf(connectSeq.toString()));                }
+                            Long.valueOf(connectSeq.toString()));                }
 
                 CharSequence readSeq = readTimeoutText.getText();
                 if(readSeq.length() > 0) {
-                    editor.putInt(
+                    editor.putLong(
                             getContext().getResources().getString(R.string.read_timeout),
-                            Integer.valueOf(readSeq.toString()));
+                            Long.valueOf(readSeq.toString()));
                 }
 
                 CharSequence writeSeq = writeTimeoutText.getText();
                 if(writeSeq.length() > 0) {
-                    editor.putInt(
+                    editor.putLong(
                             getContext().getResources().getString(R.string.write_timeout),
-                            Integer.valueOf(writeSeq.toString()));
+                            Long.valueOf(writeSeq.toString()));
                 }
 
                 editor.apply();
