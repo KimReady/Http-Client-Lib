@@ -7,6 +7,7 @@
     <string name="method_item">Http Method</string>
     <string name="path_param">Path Parameter</string>
     <string name="query">Query</string>
+    <string name="header">Header</string>
     <string name="add">Add</string>
     <string name="request_body">Request Body</string>
     <string name="sync_async">Sync/Async</string>

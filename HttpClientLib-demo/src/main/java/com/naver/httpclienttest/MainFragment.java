@@ -42,6 +42,10 @@ class MainFragment extends Fragment {
     private LinearLayout requestBodyLayout;
 
     private Spinner httpMethodSpinner;
+    private EditText headerNameText1;
+    private EditText headerNameText2;
+    private EditText headerValueText1;
+    private EditText headerValueText2;
     private EditText pathparamText;
     private EditText queryNameText1;
     private EditText queryNameText2;
@@ -112,6 +116,11 @@ class MainFragment extends Fragment {
             }
         });
 
+        headerNameText1 = view.findViewById(R.id.header_name1);
+        headerValueText1 = view.findViewById(R.id.header_value1);
+        headerNameText2 = view.findViewById(R.id.header_name2);
+        headerValueText2 = view.findViewById(R.id.header_value2);
+
         httpMethodSpinner = view.findViewById(R.id.http_method_spinner);
         httpMethodSpinner.setAdapter(makeAdapter(R.array.http_method_list));
         httpMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -177,6 +186,9 @@ class MainFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Spinner Adapter
+     */
     private ArrayAdapter<CharSequence> makeAdapter(int items) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(),
@@ -187,13 +199,28 @@ class MainFragment extends Fragment {
         return adapter;
     }
 
+    /**
+     * ClickListener for Call/DynamicCall Button
+     */
     private final Button.OnClickListener callBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             boolean isDynamicUrl = (v.getId() == dynamicCallBtn.getId());
             String dynamicUrl = dynamicUrlText.getText().toString();
             String pathParam;
+
+            Map<String, String> headerMap = new HashMap<>();
+            String headerName1 = headerNameText1.getText().toString();
+            String headerValue1 = headerValueText1.getText().toString();
+            String headerName2 = headerNameText2.getText().toString();
+            String headerValue2 = headerValueText2.getText().toString();
+
+            if (!headerName1.isEmpty() && !headerValue1.isEmpty()) {
+                headerMap.put(headerName1, headerValue1);
+            }
+            if (!headerName2.isEmpty() && !headerValue2.isEmpty()) {
+                headerMap.put(headerName2, headerValue2);
+            }
 
             HttpMethod method = HttpMethod.valueOf(String.valueOf(httpMethodSpinner.getSelectedItem()));
             try {
@@ -201,7 +228,7 @@ class MainFragment extends Fragment {
                     case GET:
                         pathParam = pathparamText.getText().toString();
                         if (!isDynamicUrl && !pathParam.isEmpty()) {
-                            executeCall(httpService.getPostsByPathParam(Integer.parseInt(pathParam)));
+                            executeCallTask(httpService.getPostsByPathParam(headerMap, Integer.parseInt(pathParam)));
                         } else {
                             Map<String, String> queryMap = new HashMap<>();
                             String queryName1 = queryNameText1.getText().toString();
@@ -217,25 +244,25 @@ class MainFragment extends Fragment {
                             }
 
                             if (isDynamicUrl) {
-                                executeCall(httpService.getPostsByDynamicURLWithQuery(dynamicUrl, queryMap));
+                                executeCallTask(httpService.getPostsByDynamicURLWithQuery(headerMap, dynamicUrl, queryMap));
                             } else {
-                                executeCall(httpService.getPostsByQuery(queryMap));
+                                executeCallTask(httpService.getPostsByQuery(headerMap, queryMap));
                             }
                         }
                         break;
                     case POST:
                         if (isDynamicUrl) {
-                            executeCall(httpService.postPostsByDynamicURL(dynamicUrl, parseRequestBody()));
+                            executeCallTask(httpService.postPostsByDynamicURL(headerMap, dynamicUrl, parseRequestBody()));
                         } else {
-                            executeCall(httpService.postPosts(parseRequestBody()));
+                            executeCallTask(httpService.postPosts(headerMap, parseRequestBody()));
                         }
                         break;
                     case PUT:
                         pathParam = pathparamText.getText().toString();
                         if (!isDynamicUrl && !pathParam.isEmpty()) {
-                            executeCall(httpService.putPostsById(Integer.parseInt(pathParam), parseRequestBody()));
+                            executeCallTask(httpService.putPostsById(headerMap, Integer.parseInt(pathParam), parseRequestBody()));
                         } else if (isDynamicUrl) {
-                            executeCall(httpService.putPostsByDynamicURL(dynamicUrl, parseRequestBody()));
+                            executeCallTask(httpService.putPostsByDynamicURL(headerMap, dynamicUrl, parseRequestBody()));
                         } else {
                             replaceFragment(new LogFragment("You should use PathParam with PUT Method.", false));
                         }
@@ -243,27 +270,31 @@ class MainFragment extends Fragment {
                     case DELETE:
                         pathParam = pathparamText.getText().toString();
                         if (!isDynamicUrl && !pathParam.isEmpty()) {
-                            executeCall(httpService.deletePostById(Integer.parseInt(pathParam)));
+                            executeCallTask(httpService.deletePostById(headerMap, Integer.parseInt(pathParam)));
                         } else if (isDynamicUrl) {
-                            executeCall(httpService.deletePostByDynamicURL(dynamicUrl));
+                            executeCallTask(httpService.deletePostByDynamicURL(headerMap, dynamicUrl));
                         } else {
                             replaceFragment(new LogFragment("You should use PathParam with DELETE Method.", false));
                         }
                         break;
                     case HEAD:
                         if (isDynamicUrl) {
-                            executeCall(httpService.getPostsForHeadMethodByDynamicURL(dynamicUrl));
+                            executeCallTask(httpService.getPostsForHeadMethodByDynamicURL(headerMap, dynamicUrl));
                         } else {
-                            executeCall(httpService.getPostsForHeadMethod());
+                            executeCallTask(httpService.getPostsForHeadMethod(headerMap));
                         }
                         break;
                 }
-            } catch(Exception e) {
+            } catch(Exception e) { // defensive code for unchecked Exception in SDK.
                 replaceFragment(new LogFragment(e.getMessage(), false));
             }
         }
 
-        private <T> void executeCall(final CallTask<T> callTask) {
+        /**
+         * execute callTask synchronously or asynchronously.
+         * and then, start LogFragment with Response received for result
+         */
+        private <T> void executeCallTask(final CallTask<T> callTask) {
             if (syncAsyncGroup.getCheckedRadioButtonId() == syncBtn.getId()) {
                 new Thread(new Runnable() {
                     @Override
