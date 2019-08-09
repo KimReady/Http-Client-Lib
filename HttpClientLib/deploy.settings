@@ -1,6 +1,6 @@
 siteUrl = https://oss.navercorp.com/da-intern-2019-1h/http-client-lib/wiki
 gitUrl = https://oss.navercorp.com/da-intern-2019-1h/http-client-lib.git
-version = 0.2.3
+version = 0.2.4
 groupId = com.naver.httpclientlib
 licenses = ['Apache-2.0'] // or something else
 id = HttpClientLib

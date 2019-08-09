@@ -102,7 +102,7 @@ public final class HttpClient {
             return this;
         }
 
-        Builder gsonBuilder(GsonBuilder gsonBuilder) {
+        public Builder gsonBuilder(GsonBuilder gsonBuilder) {
             this.gsonBuilder = gsonBuilder;
             return this;
         }
