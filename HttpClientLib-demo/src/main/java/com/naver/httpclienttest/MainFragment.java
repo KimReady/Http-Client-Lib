@@ -311,7 +311,7 @@ class MainFragment extends Fragment {
             } else if (syncAsyncGroup.getCheckedRadioButtonId() == asyncBtn.getId()) {
                 callTask.enqueue(new CallBack() {
                     @Override
-                    public void onResponse(Response<?> response) throws IOException {
+                    public void onResponse(Response response) throws IOException {
                         LogFragment logFragment = response.isSuccessful() ?
                                 new LogFragment(response, true)
                                 : new LogFragment("Response Fail", true);

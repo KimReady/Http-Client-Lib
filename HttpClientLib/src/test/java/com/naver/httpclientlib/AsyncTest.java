@@ -24,9 +24,9 @@ public class AsyncTest {
     public void getPostsSuccessByAsnc() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<List<Post>> posts = validHttpService.getPosts();
-        posts.enqueue(new CallBack() {
+        posts.enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println(response.body());
                 latch.countDown();
             }
@@ -49,9 +49,9 @@ public class AsyncTest {
     public void getPostsFailureByCancel() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<List<Post>> posts = validHttpService.getPosts();
-        CallBack callback = new CallBack() {
+        CallBack callback = new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) {
+            public void onResponse(Response<List<Post>> response) {
                 System.out.println(response);
                 latch.countDown();
             }
@@ -77,9 +77,9 @@ public class AsyncTest {
     public void getResponseByMainThread() {
         final CountDownLatch latch = new CountDownLatch(1);
         final CallTask<List<Post>> call = validHttpService.getPosts();
-        call.enqueue(new CallBack() {
+        call.enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("Received : " + Thread.currentThread().getName());
                 latch.countDown();
             }
@@ -107,9 +107,9 @@ public class AsyncTest {
         Thread receiveThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                call.enqueue(new CallBack() {
+                call.enqueue(new CallBack<List<Post>>() {
                     @Override
-                    public void onResponse(Response<?> response) throws IOException {
+                    public void onResponse(Response<List<Post>> response) throws IOException {
                         System.out.println("Received : " + Thread.currentThread().getName());
                         latch.countDown();
                     }
@@ -137,9 +137,9 @@ public class AsyncTest {
     public void duplicateCall() {
         final CountDownLatch latch = new CountDownLatch(2);
         CallTask<List<Post>> call = validHttpService.getPosts();
-        CallBack callBack = new CallBack() {
+        CallBack callBack = new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("async receive success.");
                 latch.countDown();
             }
@@ -168,9 +168,9 @@ public class AsyncTest {
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             CallTask<List<Post>> call = validHttpService.getPosts();
-            call.enqueue(new CallBack() {
+            call.enqueue(new CallBack<List<Post>>() {
                 @Override
-                public void onResponse(Response<?> response) throws IOException {
+                public void onResponse(Response<List<Post>> response) throws IOException {
                     System.out.println("async receive success.");
                     latch.countDown();
                 }
@@ -197,9 +197,9 @@ public class AsyncTest {
     public void duplicatePathParameters() {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<Post> call = invalidHttpService.getDuplicatePathParam(5, 10);
-        call.enqueue(new CallBack() {
+        call.enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("async receive success.");
                 latch.countDown();
             }
@@ -224,9 +224,9 @@ public class AsyncTest {
         final CountDownLatch latch = new CountDownLatch(1);
         CallTask<Post> call = invalidHttpService.getMorePathParamThanActualParam();
 
-        call.enqueue(new CallBack() {
+        call.enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("async receive success.");
                 latch.countDown();
             }
@@ -260,17 +260,15 @@ public class AsyncTest {
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
             CallTask<List<Post>> call = validHttpService.getPosts();
-            call.enqueue(new CallBack() {
+            call.enqueue(new CallBack<List<Post>>() {
                 @Override
-                public void onResponse(Response<?> response) throws IOException {
-                    System.out.println("async receive success.");
-                    latch.countDown();
+                public void onResponse(Response<List<Post>> response) throws IOException {
+                    List<Post> list = response.body();
                 }
 
                 @Override
                 public void onFailure(IOException e) {
-                    System.out.println("Fail, because it has been " + e.getMessage());
-                    latch.countDown();
+
                 }
             });
             if (i % 10 == 0) {

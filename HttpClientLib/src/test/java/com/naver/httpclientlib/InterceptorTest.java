@@ -1,6 +1,7 @@
 package com.naver.httpclientlib;
 
 import com.google.gson.stream.MalformedJsonException;
+import com.naver.httpclientlib.mock.Post;
 import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -205,9 +207,9 @@ public class InterceptorTest {
                 .networkInterceptor(interceptor)
                 .build();
         ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
-        validHttpService.getPosts().enqueue(new CallBack() {
+        validHttpService.getPosts().enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("success async");
             }
 
@@ -242,9 +244,9 @@ public class InterceptorTest {
                 .applicationInterceptor(interceptor)
                 .build();
         ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
-        validHttpService.getPosts().enqueue(new CallBack() {
+        validHttpService.getPosts().enqueue(new CallBack<List<Post>>() {
             @Override
-            public void onResponse(Response<?> response) throws IOException {
+            public void onResponse(Response<List<Post>> response) throws IOException {
                 System.out.println("success async");
             }
 
