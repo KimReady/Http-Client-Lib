@@ -7,6 +7,7 @@ import com.naver.httpclientlib.mock.SkipPost;
 import com.naver.httpclientlib.mock.User;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,9 +22,15 @@ import java.util.concurrent.TimeUnit;
  * valid unit test for HttpClient
  */
 public class ValidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com/")
-            .build();
-    ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+    private ValidHttpService validHttpService;
+
+    @Before
+    public void setUp() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+    }
 
     @Test
     public void getPosts() {

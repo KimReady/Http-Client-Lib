@@ -4,6 +4,7 @@ import com.naver.httpclientlib.mock.Comment;
 import com.naver.httpclientlib.mock.Post;
 import com.naver.httpclientlib.mockInterface.InvalidHttpService;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,9 +14,15 @@ import java.util.List;
  * Invalid unit test for HttpClient
  */
 public class InvalidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
-            .build();
-    InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
+    private InvalidHttpService invalidHttpService;
+
+    @Before
+    public void setUp() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        invalidHttpService = httpClient.create(InvalidHttpService.class);
+    }
 
     @Test(expected = RuntimeException.class)
     public void returnTypeNotCallTask() {
