@@ -8,3 +8,4 @@
 .externalNativeBuild
 /app/
 /HttpClientLib/local.properties
+/HttpClientLib/deploy.settings
