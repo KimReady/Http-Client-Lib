@@ -41,6 +41,19 @@ public class ValidServiceTest {
     }
 
     @Test
+    public void getPostsForString() {
+        CallTask<String> posts = validHttpService.getPostsForString();
+        try {
+            Response<String> res = posts.execute();
+            String result = res.body();
+            System.out.println(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void getPostsByIdUsingPathParam() {
         CallTask<Post> post = validHttpService.getPostsById(5);
         try {
@@ -125,6 +138,21 @@ public class ValidServiceTest {
             for (Post post : result) {
                 Assert.assertTrue(post.getUserId() == 3);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void getPostsToStringByUserIdUsingQueryMap() {
+        Map<String, Integer> query = new HashMap<>();
+        query.put("userId", 3);
+        CallTask<String> posts = validHttpService.getPostsToStringByUserId(query);
+        try {
+            Response<String> res = posts.execute();
+            String result = res.body();
+            System.out.println(result);
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail();

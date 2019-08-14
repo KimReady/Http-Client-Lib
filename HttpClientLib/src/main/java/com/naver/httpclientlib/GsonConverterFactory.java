@@ -18,8 +18,12 @@ final class GsonConverterFactory {
         this.gson = gsonBuilder.create();
     }
 
-    public Converter<?, ?> converter(Type type) {
-        TypeAdapter<?> typeAdapter = gson.getAdapter(TypeToken.get(type));
-        return new GsonConverter<>(gson, typeAdapter);
+    Converter<?, ?> converter(Type type) {
+        if(type == String.class) {
+            return new GsonConverter<>(gson);
+        } else {
+            TypeAdapter<?> typeAdapter = gson.getAdapter(TypeToken.get(type));
+            return new GsonConverter<>(gson, typeAdapter);
+        }
     }
 }
