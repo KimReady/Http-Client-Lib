@@ -12,6 +12,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface RequestMapping {
 
-    String value() default "/";
+    String value() default Default.RELATIVE_URL;
     RequestMethod method() default RequestMethod.GET;
 }

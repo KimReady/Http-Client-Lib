@@ -6,7 +6,7 @@ public interface CallTask<T> {
 
     Response<T> execute() throws IOException;
 
-    void enqueue();
+    void enqueue(CallBack callback);
 
     void cancel();
 

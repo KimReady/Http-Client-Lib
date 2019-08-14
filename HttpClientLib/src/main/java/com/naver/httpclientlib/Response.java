@@ -1,17 +1,21 @@
 package com.naver.httpclientlib;
 
-import com.naver.httpclientlib.converter.Converter;
-
 import java.io.IOException;
 import java.util.List;
 
 public final class Response<T> {
-    private okhttp3.Response rawResponse;
-    private Converter<T, ?> converter;
+    private final okhttp3.Response rawResponse;
+    private final Request request;
+    private final T body;
 
-    Response(okhttp3.Response rawResponse, Converter converter) {
+    Response(okhttp3.Response rawResponse, Converter<T, ?> converter) throws IOException {
         this.rawResponse = rawResponse;
-        this.converter = converter;
+        this.request = new Request(rawResponse.request());
+        body = converter != null ? converter.convertResponseBody(rawResponse.body()) : null;
+    }
+
+    public Request request() {
+        return request;
     }
 
     public String header(String name) {
@@ -26,11 +30,27 @@ public final class Response<T> {
         return rawResponse.headers(name);
     }
 
-    public T body() throws IOException {
-        try {
-            return converter.convertResponseBody(rawResponse.body());
-        } catch(IOException e) {
-            throw new IOException("Failed to convert with response.");
-        }
+    public T body() {
+        return body;
+    }
+
+    public int code() {
+        return rawResponse.code();
+    }
+
+    public boolean isSuccessful() {
+        return rawResponse.isSuccessful();
+    }
+
+    public boolean isRedirect() {
+        return rawResponse.isRedirect();
+    }
+
+    okhttp3.Response getRawResponse() {
+        return rawResponse;
+    }
+
+    public void close() {
+        rawResponse.close();
     }
 }
