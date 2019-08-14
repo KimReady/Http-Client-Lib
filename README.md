@@ -72,4 +72,4 @@ dependencies {
 
 
 
-[1]: https://oss.navercorp.com/da-intern-2019-1h/http-client-sdk/wiki
+[1]: https://github.com/KimReady/Http-Client-Lib/wiki
