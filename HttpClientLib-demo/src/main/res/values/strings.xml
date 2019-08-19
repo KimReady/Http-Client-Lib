@@ -40,6 +40,7 @@
     </string-array>
 
     <string name="save">Save</string>
+    <string name="crash">Crash</string>
     <string name="base_url">Base URL</string>
     <string name="default_URL">http://jsonplaceholder.typicode.com</string>
     <string name="base_URL_hint">ex) http://jsonplaceholder.typicode.com</string>

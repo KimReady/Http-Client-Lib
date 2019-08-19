@@ -34,7 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-class MainFragment extends Fragment {
+import static com.naver.httpclienttest.DefaultTimeout.*;
+
+public class MainFragment extends Fragment {
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private LinearLayout pathParamLayout;
@@ -75,16 +77,16 @@ class MainFragment extends Fragment {
                 getContext().getResources().getString(R.string.default_URL));
         long callTimeout = sharedPreferences.getLong(
                 getContext().getResources().getString(R.string.call_timeout),
-                DefaultTimeout.callTimeout);
+                CALL_TIMEOUT);
         long connectTimeout = sharedPreferences.getLong(
                 getContext().getResources().getString(R.string.connect_timeout),
-                DefaultTimeout.connectTimeout);
+                CONNECT_TIMEOUT);
         long readTimeout = sharedPreferences.getLong(
                 getContext().getResources().getString(R.string.read_timeout),
-                DefaultTimeout.readTimeout);
+                READ_TIMEOUT);
         long writeTimeout = sharedPreferences.getLong(
                 getContext().getResources().getString(R.string.write_timeout),
-                DefaultTimeout.writeTimeout);
+                WRITE_TIMEOUT);
 
         HttpClient httpClient = new HttpClient.Builder()
                 .baseUrl(baseUrl)

@@ -27,6 +27,14 @@
                     android:textStyle="bold" />
 
                 <Button
+                    android:id="@+id/crash_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/save_btn"
+                    android:layout_toStartOf="@id/save_btn"
+                    android:text="@string/crash" />
+
+                <Button
                     android:id="@+id/save_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
