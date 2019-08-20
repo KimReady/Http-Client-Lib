@@ -39,7 +39,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'com.naver.httpclientlib:HttpClientLib:0.3.0'
+    implementation 'com.naver.httpclientlib:HttpClientLib:0.3.1'
 }
 ```
 
@@ -60,7 +60,7 @@ dependencies {
   <dependency>
     <groupId>com.naver.httpclientlib</groupId>
     <artifactId>HttpClientLib</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
     <type>pom</type>
   </dependency>
 </dependencies>

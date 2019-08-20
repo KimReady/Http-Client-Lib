@@ -48,6 +48,26 @@ public class ValidServiceTest {
     }
 
     @Test
+    public void cachedGetPosts() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+        validHttpService = httpClient.create(ValidHttpService.class);
+        CallTask<List<Post>> posts = validHttpService.getPosts();
+        try {
+            Response<List<Post>> res = posts.execute();
+            List<Post> result = res.body();
+            for (Post post : result) {
+                System.out.println(post.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void getPostsForString() {
         CallTask<String> posts = validHttpService.getPostsForString();
         try {
