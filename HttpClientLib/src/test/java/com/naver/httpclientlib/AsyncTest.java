@@ -5,6 +5,7 @@ import com.naver.httpclientlib.mockInterface.InvalidHttpService;
 import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,10 +16,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class AsyncTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
-            .build();
-    ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
-    InvalidHttpService invalidHttpService = httpClient.create(InvalidHttpService.class);
+    private ValidHttpService validHttpService;
+    private InvalidHttpService invalidHttpService;
+
+    @Before
+    public void setUp() {
+        HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+        invalidHttpService = httpClient.create(InvalidHttpService.class);
+    }
 
     @Test
     public void getPostsSuccessByAsnc() {
@@ -263,12 +270,12 @@ public class AsyncTest {
             call.enqueue(new CallBack<List<Post>>() {
                 @Override
                 public void onResponse(Response<List<Post>> response) throws IOException {
-                    List<Post> list = response.body();
+                    latch.countDown();
                 }
 
                 @Override
                 public void onFailure(IOException e) {
-
+                    latch.countDown();
                 }
             });
             if (i % 10 == 0) {

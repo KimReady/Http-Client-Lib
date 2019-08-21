@@ -5,6 +5,7 @@ import com.naver.httpclientlib.mock.Post;
 import com.naver.httpclientlib.mockInterface.ValidHttpService;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,9 +14,15 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ResponseTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com/")
-            .build();
-    ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+    private ValidHttpService validHttpService;
+
+    @Before
+    public void setUp() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+    }
 
     @Test
     public void responseHeaderByName() {

@@ -7,6 +7,7 @@ import com.naver.httpclientlib.mock.SkipPost;
 import com.naver.httpclientlib.mock.User;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,12 +22,38 @@ import java.util.concurrent.TimeUnit;
  * valid unit test for HttpClient
  */
 public class ValidServiceTest {
-    HttpClient httpClient = new HttpClient.Builder().baseUrl("http://jsonplaceholder.typicode.com/")
-            .build();
-    ValidHttpService validHttpService = httpClient.create(ValidHttpService.class);
+    private ValidHttpService validHttpService;
+
+    @Before
+    public void setUp() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+    }
 
     @Test
     public void getPosts() {
+        CallTask<List<Post>> posts = validHttpService.getPosts();
+        try {
+            Response<List<Post>> res = posts.execute();
+            List<Post> result = res.body();
+            for (Post post : result) {
+                System.out.println(post.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void cachedGetPosts() {
+        HttpClient httpClient = new HttpClient.Builder()
+                .baseUrl("http://jsonplaceholder.typicode.com/")
+                .build();
+        validHttpService = httpClient.create(ValidHttpService.class);
+        validHttpService = httpClient.create(ValidHttpService.class);
         CallTask<List<Post>> posts = validHttpService.getPosts();
         try {
             Response<List<Post>> res = posts.execute();

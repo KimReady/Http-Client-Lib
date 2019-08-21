@@ -17,7 +17,7 @@ import com.naver.httpclientlib.Request;
 import com.naver.httpclientlib.Response;
 import com.naver.httpclientsdk.R;
 
-class LogFragment extends Fragment {
+public class LogFragment extends Fragment {
     private Response<?> response;
     private String errorMessage;
 

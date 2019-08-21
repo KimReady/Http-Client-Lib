@@ -17,14 +17,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.naver.httpclientsdk.R;
 
+import static com.naver.httpclienttest.DefaultTimeout.*;
+
 public class HttpClientConfigFragment extends Fragment {
 
-    EditText baseUrlText;
-    EditText callTimeoutText;
-    EditText connectTimeoutText;
-    EditText readTimeoutText;
-    EditText writeTimeoutText;
-    SharedPreferences sharedPreferences;
+    private EditText baseUrlText;
+    private EditText callTimeoutText;
+    private EditText connectTimeoutText;
+    private EditText readTimeoutText;
+    private EditText writeTimeoutText;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,25 +54,25 @@ public class HttpClientConfigFragment extends Fragment {
         callTimeoutText.setText(String.valueOf(
                 sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.call_timeout),
-                        DefaultTimeout.callTimeout)));
+                        CALL_TIMEOUT)));
 
         connectTimeoutText = view.findViewById(R.id.connect_time);
         connectTimeoutText.setText(String.valueOf(
                 sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.connect_timeout),
-                        DefaultTimeout.connectTimeout)));
+                        CONNECT_TIMEOUT)));
 
         readTimeoutText = view.findViewById(R.id.read_time);
         readTimeoutText.setText(String.valueOf(
                 sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.read_timeout),
-                        DefaultTimeout.readTimeout)));
+                        READ_TIMEOUT)));
 
         writeTimeoutText = view.findViewById(R.id.write_time);
         writeTimeoutText.setText(String.valueOf(
                 sharedPreferences.getLong(
                         getContext().getResources().getString(R.string.write_timeout),
-                        DefaultTimeout.writeTimeout)));
+                        WRITE_TIMEOUT)));
 
         Button saveBtn = view.findViewById(R.id.save_btn);
         saveBtn.setOnClickListener(new Button.OnClickListener(){
@@ -118,6 +120,13 @@ public class HttpClientConfigFragment extends Fragment {
             }
         });
 
+        Button crashBtn = view.findViewById(R.id.crash_btn);
+        crashBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                throw new AssertionError("Crash!");
+            }
+        });
         return view;
     }
 

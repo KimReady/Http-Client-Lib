@@ -3,10 +3,13 @@ package com.naver.httpclientlib;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +22,15 @@ import okhttp3.Response;
 import static com.naver.httpclientlib.Utils.checkNotNull;
 
 public final class HttpClient {
+    private Map<String, InvocationHandler> cachedInvocation;
+
     private final HttpUrl baseUrl;
     private final okhttp3.Call.Factory callFactory;
     private final ExecutorService executorService;
     private final GsonBuilder gsonBuilder;
 
     public HttpClient(Builder builder) {
+        this.cachedInvocation = new HashMap<>();
         this.baseUrl = builder.baseUrl;
         this.callFactory = builder.callFactory;
         this.executorService = builder.executorService;
@@ -38,7 +44,7 @@ public final class HttpClient {
 
         return (T) Proxy.newProxyInstance(service.getClassLoader()
                 , new Class<?>[]{service}
-                , new HttpInvocationHandler(this));
+                , getInvocationHandler(service));
     }
 
     HttpUrl getBaseUrl() {
@@ -55,6 +61,15 @@ public final class HttpClient {
 
     GsonBuilder gsonBuilder() {
         return gsonBuilder;
+    }
+
+    private <T> InvocationHandler getInvocationHandler(Class<T> service) {
+        if(cachedInvocation.containsKey(service.getName())) {
+            return cachedInvocation.get(service.getName());
+        }
+        InvocationHandler invocationHandler = new HttpInvocationHandler(this);
+        cachedInvocation.put(service.getName(), invocationHandler);
+        return invocationHandler;
     }
 
     /**
