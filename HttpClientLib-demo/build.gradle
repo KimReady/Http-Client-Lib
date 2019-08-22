@@ -26,6 +26,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.naver.httpclientlib:HttpClientLib:0.3.1'
-    implementation 'com.naver.ers:ErrorReportingSdk:0.1.0'
+    implementation project(":HttpClientLib")
+    implementation 'com.naver.ers:ErrorReportingSdk:0.1.3'
 }

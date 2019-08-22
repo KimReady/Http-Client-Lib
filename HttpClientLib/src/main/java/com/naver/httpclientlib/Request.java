@@ -1,10 +1,10 @@
 package com.naver.httpclientlib;
 
 public class Request {
-    final String url;
-    final String method;
-    final String headers;
-    final String contentType;
+    private final String url;
+    private final String method;
+    private final String headers;
+    private final String contentType;
 
     public Request(okhttp3.Request request) {
         url = request.url().toString();
